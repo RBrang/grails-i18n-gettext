@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-10-14 20:09+0200\n"
+"POT-Creation-Date: 2008-10-16 16:00+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,58 +16,29 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: /data0/afp/grails-projects/I18nGettext/./test/integration/I18nGettextTagLibTests.groovy:42
-#: /data0/afp/grails-projects/I18nGettext/./test/integration/I18nGettextTagLibTests.groovy:48
-#: /data0/afp/grails-projects/I18nGettext/./test/integration/I18nGettextTagLibTests.groovy:56
-#: /data0/afp/grails-projects/I18nGettext/./test/integration/I18nGettextTagLibTests.groovy:57
-#: /data0/afp/grails-projects/I18nGettext/./test/integration/I18nGettextTagLibTests.groovy:65
-#: /data0/afp/grails-projects/I18nGettext/./test/integration/I18nGettextTagLibTests.groovy:66
 msgid "foo"
 msgid_plural "foos"
 msgstr[0] "schnick"
 msgstr[1] "schnicks"
 
-#: /data0/afp/grails-projects/I18nGettext/./test/integration/I18nGettextTagLibTests.groovy:43
-#: /data0/afp/grails-projects/I18nGettext/./test/integration/I18nGettextTagLibTests.groovy:49
-#: /data0/afp/grails-projects/I18nGettext/./test/integration/I18nGettextTagLibTests.groovy:58
-#: /data0/afp/grails-projects/I18nGettext/./test/integration/I18nGettextTagLibTests.groovy:60
-#: /data0/afp/grails-projects/I18nGettext/./test/integration/I18nGettextTagLibTests.groovy:67
-#: /data0/afp/grails-projects/I18nGettext/./test/integration/I18nGettextTagLibTests.groovy:69
-#, java-format
 msgid "foo{0}"
 msgid_plural "foos{1}"
 msgstr[0] "schnick{0}"
 msgstr[1] "schnicks{1}"
 
-#: /data0/afp/grails-projects/I18nGettext/./test/integration/I18nGettextTagLibTests.groovy:44
-#: /data0/afp/grails-projects/I18nGettext/./test/integration/I18nGettextTagLibTests.groovy:50
-#, java-format
 msgid "foo{0} and {1}"
 msgstr "schnick{0} und {1}"
 
-#: /data0/afp/grails-projects/I18nGettext/./test/integration/I18nGettextTagLibTests.groovy:59
-#: /data0/afp/grails-projects/I18nGettext/./test/integration/I18nGettextTagLibTests.groovy:61
-#: /data0/afp/grails-projects/I18nGettext/./test/integration/I18nGettextTagLibTests.groovy:68
-#: /data0/afp/grails-projects/I18nGettext/./test/integration/I18nGettextTagLibTests.groovy:70
-#, java-format
 msgid "foo{2}"
 msgid_plural "foos{3}"
 msgstr[0] "schnick{2}"
 msgstr[1] "schnicks{3}"
 
-#: /data0/afp/grails-projects/I18nGettext/./test/integration/I18nGettextTagLibTests.groovy:76
-#: /data0/afp/grails-projects/I18nGettext/./test/integration/I18nGettextTagLibTests.groovy:81
-#: /data0/afp/grails-projects/I18nGettext/./test/integration/I18nGettextTagLibTests.groovy:84
 msgid "fish (verb)"
 msgstr "angeln"
 
-#: /data0/afp/grails-projects/I18nGettext/./test/integration/I18nGettextTagLibTests.groovy:77
-#: /data0/afp/grails-projects/I18nGettext/./test/integration/I18nGettextTagLibTests.groovy:82
-#: /data0/afp/grails-projects/I18nGettext/./test/integration/I18nGettextTagLibTests.groovy:85
 msgid "fish (noun)"
 msgstr "Fisch"
 
-#: /data0/afp/grails-projects/I18nGettext/./test/integration/I18nGettextTagLibTests.groovy:91
-#: /data0/afp/grails-projects/I18nGettext/./test/integration/I18nGettextTagLibTests.groovy:95
 msgid "foomark"
 msgstr "schnickmark"

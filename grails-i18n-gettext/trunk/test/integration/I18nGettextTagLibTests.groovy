@@ -18,6 +18,7 @@ import java.util.Locale;
 
 class I18nGettextTagLibTests extends GroovyTestCase {
 	
+	def transactional = false
 	I18nGettextTagLib tl = null
 	
 	void setUp(){

@@ -22,7 +22,7 @@ import org.codehaus.groovy.grails.commons.ApplicationHolder
 class I18nGettextGrailsPlugin {
     def observe = ['*']
 	
-    def version = 0.1
+    def version = 0.2
     def dependsOn = [:]
 
     def author = "Rainer Brang, Backend-Server GmbH & Co. KG"

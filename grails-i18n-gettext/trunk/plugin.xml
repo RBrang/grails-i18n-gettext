@@ -1,4 +1,4 @@
-<plugin name='i18n-gettext' version='0.1'>
+<plugin name='i18n-gettext' version='0.2'>
   <author>Rainer Brang, Backend-Server GmbH &amp; Co. KG</author>
   <authorEmail>grails@backend-server.de</authorEmail>
   <title>I18n gettext plugin for grails</title>
@@ -22,8 +22,6 @@ Beware: Gnu gettext can not handle groovy's "here-doc" strings.
 </description>
   <documentation>http://www.backend-server.de/i18ngettextforgrails</documentation>
   <resources>
-    <resource>UrlMappings</resource>
-    <resource>DataSource</resource>
     <resource>I18nGettextTagLib</resource>
   </resources>
 </plugin>

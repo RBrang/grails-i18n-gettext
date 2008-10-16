@@ -38,7 +38,6 @@ def getConfigFile = {
 }
 
 target('default': "Scan all .groovy and .gsp files for tr() trn() and merge with all .po files in "+i18nDir ) {
-
 	parameters = []
 
 	if( args ){
@@ -71,7 +70,7 @@ target('default': "Scan all .groovy and .gsp files for tr() trn() and merge with
 
 
 target ( scan: 'Search all .groovy or .gsp files for tr() trn() and generate a .pot file in grails-app/i18n.' ) {
-	println('Generating .pot file from sources.')
+	println("\nGenerating .pot file from sources.")
 
 	def charset = getConfigFile()?.I18nGettext?.inputFileCharset ?:"UTF-8"
 
@@ -79,8 +78,26 @@ target ( scan: 'Search all .groovy or .gsp files for tr() trn() and generate a .
 	new File( i18nDir+'/keys.pot' ).write("")
 	
 	new File(".").eachFileRecurse{ file ->
-		if( file.isFile() && ( file.name.endsWith("groovy") || file.name.endsWith(".gsp") || file.name.endsWith(".java") || file.name.endsWith(".jsp") ) ){
-			Execute.shell( 'xgettext -j --force-po -ktrc -ktr -kmarktr -ktrn:1,2 --from-code '+charset+' -o'+i18nDir+'/keys.pot -Ljava '+file.absolutePath, outProcessing : { } )
+		if( file.isFile() ){
+
+			// switch programming language identifier for best recognition rates
+			def programmingLanguageIdentifier = ""
+			if( file.name.endsWith(".groovy") || file.name.endsWith(".java") ){
+				programmingLanguageIdentifier = "java"
+			} else if( file.name.endsWith(".gsp") || file.name.endsWith(".jsp") ) {
+				// pretend to scan a .php file, which results in a much higher recognition rate.
+				programmingLanguageIdentifier = "php"
+			}
+
+			if( programmingLanguageIdentifier.length()>0 ){
+				def command = 'xgettext -j --force-po -ktrc -ktr -kmarktr -ktrn:1,2 --from-code '+charset+' -o'+i18nDir+'/keys.pot -L'+programmingLanguageIdentifier+' '+file.absolutePath
+				println( command )
+				def e = command.execute()
+				e.waitFor()
+				if( e.exitValue() ){
+					println( "Error: "+e.err.text )
+				}
+			}
 		}
 	}
 	
@@ -89,7 +106,7 @@ target ( scan: 'Search all .groovy or .gsp files for tr() trn() and generate a .
 
 
 target ( merge: 'Merge the .pot file with all available .po files in grails-app/i18n.' ) {
-	println('Merging .po files with .pot file.')
+	println("\nMerging .po files with .pot file.")
 	
 	touchpo( "Messages" )	// the default Resource
 	
@@ -99,15 +116,26 @@ target ( merge: 'Merge the .pot file with all available .po files in grails-app/
 		if( !it.contains('~') ){
 			String lang = it.replace( ".po", "" )
 	
-			Execute.shell( 'msgmerge -U '+i18nDir+'/'+lang+'.po '+i18nDir+'/keys.pot' )
+			command = 'msgmerge -U '+i18nDir+'/'+lang+'.po '+i18nDir+'/keys.pot'
+			println( command )
+			def e = command.execute()
+			e.waitFor()
+			if( e.exitValue() ){
+				println( "Error: "+e.err.text )
+			}
 		}
 	}
 }
 
 
 target ( makemo: 'Update all .mo files from their updated .po files and write results to WEB-INF/i18ngettext.' ) {
-	println('Compiling .mo files.')
+	println("\nCompiling .mo files.")
 	
+	def destination = new File( 'web-app/WEB-INF/' );
+	if( !destination.exists() ){
+		destination.mkdir()
+	}
+
 	List fl = new File(i18nDir).listFiles([accept:{file->file ==~ /.*?\.po/ }] as FileFilter).toList().name
 	fl.each(){
 		
@@ -115,9 +143,16 @@ target ( makemo: 'Update all .mo files from their updated .po files and write re
 			String lang = it.replace( ".po", "" )
 			
 			if( lang=="Messages" ){
-				Execute.shell( 'msgfmt --java2 -d web-app/WEB-INF/ -r i18ngettext.Messages '+i18nDir+'/Messages.po' )	// the default Resource
+				command = 'msgfmt --java2 -d web-app/WEB-INF/ -r i18ngettext.Messages '+i18nDir+'/Messages.po' 	// the default Resource
 			} else {
-				Execute.shell( 'msgfmt --java2 -d web-app/WEB-INF/ -r i18ngettext.Messages -l '+lang+' '+i18nDir+'/'+lang+'.po' )
+				command = 'msgfmt --java2 -d web-app/WEB-INF/ -r i18ngettext.Messages -l '+lang+' '+i18nDir+'/'+lang+'.po'
+			}
+
+			println( command )
+			def e = command.execute()
+			e.waitFor()
+			if( e.exitValue() ){
+				println( "Error: "+e.err.text )
 			}
 		}
 	}
