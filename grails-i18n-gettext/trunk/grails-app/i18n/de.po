@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-10-16 16:00+0200\n"
+"POT-Creation-Date: 2008-10-17 12:08+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -42,3 +42,9 @@ msgstr "Fisch"
 
 msgid "foomark"
 msgstr "schnickmark"
+
+msgid "bar"
+msgstr "schnack"
+
+msgid "baz"
+msgstr "schnuck"

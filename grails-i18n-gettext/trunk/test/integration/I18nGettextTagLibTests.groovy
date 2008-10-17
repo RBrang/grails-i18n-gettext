@@ -29,26 +29,26 @@ class I18nGettextTagLibTests extends GroovyTestCase {
 	
 	
     void testTrAvailability() {
-    	assert tl.tr()=="en"
+    	assert tl.tr() == "en"
     }
     
     void testTrAvailabilityWithForcedLocale() {
-    	tl.session.setAttribute("org.springframework.web.servlet.i18n.SessionLocaleResolver.LOCALE", "de")
-    	assert tl.tr()=="de"
+    	tl.session.setAttribute("org.springframework.web.servlet.i18n.SessionLocaleResolver.LOCALE", "de_DE")
+    	assert tl.tr() == "de_DE"
     }
     
     
     
     void testTr(){
-    	assert tl.tr("foo")=="foo"
-       	assert tl.tr("foo{0}",42)=="foo42"
-      	assert tl.tr("foo{0} and {1}", [42,"bar"])=="foo42 and bar"
+    	assert tl.tr("foo") == "foo"
+       	assert tl.tr("foo{0}",42) == "foo42"
+      	assert tl.tr("foo{0} and {1}", [42,"bar"]) == "foo42 and bar"
     }
     
     void testTrWithForcedLocale(){
-    	assert tl.tr("foo", "de")=="schnick"
-       	assert tl.tr("foo{0}",42, "de")=="schnick42"
-      	assert tl.tr("foo{0} and {1}", [42,"bar"], "de")=="schnick42 und bar"
+    	assert tl.tr("foo", "de") == "schnick"
+       	assert tl.tr("foo{0}", 42, "de") == "schnick42"
+      	assert tl.tr("foo{0} and {1}", [42,"bar"], "de") == "schnick42 und bar"
     }
     
     
@@ -96,5 +96,15 @@ class I18nGettextTagLibTests extends GroovyTestCase {
     	assert tl.marktr("foomark", "de" ) == "foomark"
     }
     
+    
+    void testEscalation(){
+    	assert tl.tr("bar", "de_DE") == "SCHNACK"	// "bar" is different in all countries
+       	assert tl.tr("bar", "de") == "schnack"
+       	assert tl.tr("bar", "de_CH") == "schnackli"
+    	
+       	assert tl.tr("baz", "de") == "schnuck"		// "baz" is only translated in de.po
+    	assert tl.tr("baz", "de_DE") == "schnuck"	// "baz" is missing in de_DE.po
+       	assert tl.tr("baz", "de_CH") == "schnuck"	// "baz" is missing in de_CH.po
+    }
     
 }

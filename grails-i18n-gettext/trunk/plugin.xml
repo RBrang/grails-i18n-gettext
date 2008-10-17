@@ -1,4 +1,4 @@
-<plugin name='i18n-gettext' version='0.2'>
+<plugin name='i18n-gettext' version='0.3'>
   <author>Rainer Brang, Backend-Server GmbH &amp; Co. KG</author>
   <authorEmail>grails@backend-server.de</authorEmail>
   <title>I18n gettext plugin for grails</title>
@@ -20,7 +20,7 @@ forget about inventing lookup keys for your .properties files, because for gnu g
 
 Beware: Gnu gettext can not handle groovy's "here-doc" strings.
 </description>
-  <documentation>http://www.backend-server.de/i18ngettextforgrails</documentation>
+  <documentation>http://www.grails.org/I18n-gettext+Plugin</documentation>
   <resources>
     <resource>I18nGettextTagLib</resource>
   </resources>

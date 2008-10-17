@@ -22,7 +22,7 @@ import org.codehaus.groovy.grails.commons.ApplicationHolder
 class I18nGettextGrailsPlugin {
     def observe = ['*']
 	
-    def version = 0.2
+    def version = 0.3
     def dependsOn = [:]
 
     def author = "Rainer Brang, Backend-Server GmbH & Co. KG"
@@ -48,7 +48,7 @@ Beware: Gnu gettext can not handle groovy's "here-doc" strings.
 """
 
     // URL to the plugin's documentation
-    def documentation = "http://www.backend-server.de/i18ngettextforgrails"
+    def documentation = "http://www.grails.org/I18n-gettext+Plugin"
 
     def doWithDynamicMethods = { ctx ->
 
@@ -185,29 +185,79 @@ Beware: Gnu gettext can not handle groovy's "here-doc" strings.
     
 
     
-    
+    /**
+     * Get an I18n from the I81nFactoy and set the current locale and source code locale.
+     */
 	public getI18nObject( session, request, log, wantLocale=null, forceSourceCodeLocale=null ) {
     	
 		def i18n = null
 		try{
+			
+			def language = ""
+			def country = ""
+			def variant = ""
+
+			// use locale string forced by the method call or from the session.
+			if ( !wantLocale ){
+				wantLocale = getCurrentLocale( session, request )
+			}
+			def wantedLocale = null
+			try{
+				language = wantLocale?.split("_")[0].toLowerCase()
+				country = wantLocale?.split("_")[1].toUpperCase()
+				variant = wantLocale?.split("_")[2]
+			} catch( ArrayIndexOutOfBoundsException){
+				// ignore
+			}
+			wantedLocale = new Locale( language, country, variant )
+			
+			
+			// use source code locale string forced by the method call or from config or use the bailout "en"
+			if ( !forceSourceCodeLocale ){
+				forceSourceCodeLocale = ApplicationHolder?.application?.config?.I18nGettext?.sourceCodeLocale ?:"en"
+			}
+			def wantedSourceCodeLocale = null
+			language = ""
+			country = ""
+			variant = ""
+			try{
+				language = forceSourceCodeLocale?.split("_")[0].toLowerCase()
+				country = forceSourceCodeLocale?.split("_")[1].toUpperCase()
+				variant = forceSourceCodeLocale?.split("_")[2]
+			} catch( ArrayIndexOutOfBoundsException){
+				// ignore
+			}
+			wantedSourceCodeLocale = new Locale( language, country, variant )
+			
+
 			i18n = I18nFactory.getI18n( I18nGettextGrailsPlugin.class, "i18ngettext.Messages" )
-			i18n.setLocale( new Locale(wantLocale?wantLocale:getCurrentLocale( session, request ) ) )
-			i18n.setSourceCodeLocale( forceSourceCodeLocale?new Locale( forceSourceCodeLocale ):new Locale( ApplicationHolder?.application?.config?.I18nGettext?.sourceCodeLocale ?:"en" ) )
+			i18n.setLocale( wantedLocale )
+			i18n.setSourceCodeLocale( wantedSourceCodeLocale )
+			
 		} catch( MissingResourceException mre ){
 			log.error( mre.getMessage()+". Key: "+mre.getKey()+" Class: "+mre.getClassName() )
 			return null
 		}
-		return i18n
 		
+		return i18n
 	}
 	
 	
+	/**
+	 * Get the current locale - either from the session, or from the browser's language
+	 */
 	public getCurrentLocale( session, request ){
 		
-		def currentLocale = session?.getAttribute("org.springframework.web.servlet.i18n.SessionLocaleResolver.LOCALE")?.toString()
-		currentLocale = currentLocale?currentLocale:request?.getLocale()?.toString()
+		def currentLocale = session?.getAttribute("org.springframework.web.servlet.i18n.SessionLocaleResolver.LOCALE")
+		currentLocale = currentLocale?currentLocale:request?.getLocale()
 				
-		return currentLocale		
-	}    
-    
+		// Fallbacks		
+		if( !currentLocale ){
+			currentLocale = ApplicationHolder?.application?.config?.I18nGettext?.sourceCodeLocale ?:"en"			
+		}
+		
+		return currentLocale.toString()		
+	}
+	
+	
 }
