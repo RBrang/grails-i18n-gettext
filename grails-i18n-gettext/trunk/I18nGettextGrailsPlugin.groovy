@@ -13,7 +13,7 @@
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
 //
-   
+
 import java.text.MessageFormat
 import java.util.Locale
 import org.xnap.commons.i18n.*
@@ -22,7 +22,7 @@ import org.codehaus.groovy.grails.commons.ApplicationHolder
 class I18nGettextGrailsPlugin {
     def observe = ['*']
 	
-    def version = 0.3
+    def version = 0.4
     def dependsOn = [:]
 
     def author = "Rainer Brang, Backend-Server GmbH & Co. KG"
@@ -47,9 +47,14 @@ forget about inventing lookup keys for your .properties files, because for gnu g
 Beware: Gnu gettext can not handle groovy's "here-doc" strings.
 """
 
-    // URL to the plugin's documentation
+    /**
+     * URL to the plugin's documentation
+     */ 
     def documentation = "http://www.grails.org/I18n-gettext+Plugin"
 
+    /**
+     * Loop through some classes and process them
+     */
     def doWithDynamicMethods = { ctx ->
 
 	    application.controllerClasses.each { controllerClass ->
@@ -60,15 +65,20 @@ Beware: Gnu gettext can not handle groovy's "here-doc" strings.
 	    	processClass( domainClass, log )
 	    }    	
 	    
+	    application.serviceClasses.each { serviceClass ->
+    		processClass( serviceClass, log )
+	    }    	
+    
+
 	    application.tagLibClasses.each { tagLibClass ->
-	    
-			if( tagLibClass.name=="I18nGettext" ){
-		    	processClass( tagLibClass, log )
-			}
+	    	processClass( tagLibClass, log )
 	    }    	
 	    
     }
     
+    /**
+     * Change event handler 
+     */
     def onChange = { event ->
         // Implement code that is executed when any artefact that this plugin is
         // watching is modified and reloaded. The event contains: event.source,
@@ -84,17 +94,21 @@ Beware: Gnu gettext can not handle groovy's "here-doc" strings.
             processClass( domainClass, log )
         }
 
+        if ( application.isServiceClass(event.source) ) {
+            def serviceClass = application.getServiceClass(event.source?.name)
+            processClass( serviceClass, log )
+        }
+
         if ( application.isTagLibClass(event.source) ) {
             def tagLibClass = application.getTagLibClass(event.source?.name)
-            
-			if( tagLibClass.name=="I18nGettext" ){
-		    	processClass( tagLibClass, log )
-			}
+	    	processClass( tagLibClass, log )
         }
 
     }
 
-    
+    /**
+     * Add dynamic methods to the given class
+     */
     def processClass( theClass, log ){
     	
     	log.debug( "processing class: "+theClass.name ) 
@@ -172,12 +186,14 @@ Beware: Gnu gettext can not handle groovy's "here-doc" strings.
     	
     	// Marks text to be translated, but doesn't return the translation but text itself.
     	theClass.metaClass.marktr = {String text, String locale ->
-    		def i18n = getI18nObject( session, request, log, locale )
+    		// we are not interested in the current locale, we just force the source code locale. marktr does not return a translated string, anyway.
+    		def i18n = getI18nObject( null, null, log, ApplicationHolder?.application?.config?.I18nGettext?.sourceCodeLocale ?:"en" )
 			i18n?i18n.marktr(text):text
 		}    	
 
     	theClass.metaClass.marktr = {String text ->
-    		def i18n = getI18nObject( session, request, log )
+		def i18n = getI18nObject( null, null, log, ApplicationHolder?.application?.config?.I18nGettext?.sourceCodeLocale ?:"en" )
+    		// we are not interested in the current locale, we just force the source code locale. marktr does not return a translated string, anyway.
 			i18n?i18n.marktr(text):text
 		}    	
 
