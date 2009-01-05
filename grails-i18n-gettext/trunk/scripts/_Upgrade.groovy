@@ -5,6 +5,6 @@
 // You can use 'Ant' to access a global instance of AntBuilder
 //
 
-Ant.property(environment:"env")
-grailsHome = Ant.antProject.properties."env.GRAILS_HOME"
+ant.property(environment:"env")
+grailsHome = ant.antProject.properties."env.GRAILS_HOME"
 

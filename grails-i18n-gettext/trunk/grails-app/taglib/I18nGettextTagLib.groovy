@@ -18,5 +18,5 @@ import java.util.Locale;
 
 class I18nGettextTagLib {
 	// This serves as the namespace for the dynamically added methods (tr, trc, trn, ...)
-	static namespace = 'I18nGettext'
+	static namespace = "t9n"
 }

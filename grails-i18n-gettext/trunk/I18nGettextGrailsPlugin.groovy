@@ -22,8 +22,9 @@ import org.codehaus.groovy.grails.commons.ApplicationHolder
 class I18nGettextGrailsPlugin {
     def observe = ['*']
 	
-    def version = 0.4
+    def version = 0.5
     def dependsOn = [:]
+    def loadAfter = ['taglibs']
 
     def author = "Rainer Brang, Backend-Server GmbH & Co. KG"
     def authorEmail = "grails@backend-server.de"
@@ -192,7 +193,7 @@ Beware: Gnu gettext can not handle groovy's "here-doc" strings.
 		}    	
 
     	theClass.metaClass.marktr = {String text ->
-		def i18n = getI18nObject( null, null, log, ApplicationHolder?.application?.config?.I18nGettext?.sourceCodeLocale ?:"en" )
+			def i18n = getI18nObject( null, null, log, ApplicationHolder?.application?.config?.I18nGettext?.sourceCodeLocale ?:"en" )
     		// we are not interested in the current locale, we just force the source code locale. marktr does not return a translated string, anyway.
 			i18n?i18n.marktr(text):text
 		}    	
