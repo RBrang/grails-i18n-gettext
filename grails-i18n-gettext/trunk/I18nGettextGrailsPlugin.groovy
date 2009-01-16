@@ -31,9 +31,9 @@ class I18nGettextGrailsPlugin {
     def title = "I18n gettext plugin for grails"
     def description = """This plugin adds i18n support to your app, in 'gnu gettext'-style.
 1 First, you need to wrap special method calls around all strings you want to translate.
-2 Then you use an included Gant script to extract all translatable strings from your sources.
+2 Then you call "grails i18ngettext" to extract all translatable strings from your sources.
 3 Now you translate all strings from step 2 which you will find in .po files in your i18n directory.
-4 Use another included Gant script to compile your translated .po files into resource classes.
+4 Call "grails i18ngettext makemo" to compile your translated .po files into resource classes.
 5 repeat 1-4 each time you added some new strings to your application. Existing translations will be merged in. 
 
 During runtime: The methods, you wrapped around the strings, will pick the correct translation according to the
@@ -44,8 +44,11 @@ The translator may like: PoEdit or alike to translate texts.
 
 You will love the dead simple plural form handling and FormatMessage-like String handling. Additionally, you can 
 forget about inventing lookup keys for your .properties files, because for gnu gettext, the original string is the key.
+Plus: No more problems with special chars like german umlauts. gettext can handle that.
 
-Beware: Gnu gettext can not handle groovy's "here-doc" strings.
+Beware: 
+a) Gnu gettext can not handle groovy's "here-doc" strings.
+b) Your original strings should be english, because Gnu gettext can't cope with non-ascii characters as original strings.
 """
 
     /**
