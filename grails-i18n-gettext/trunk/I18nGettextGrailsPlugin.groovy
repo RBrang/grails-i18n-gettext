@@ -63,22 +63,18 @@ b) Your original strings should be english, because Gnu gettext can't cope with 
 
 		application.controllerClasses.each { controllerClass ->
 	    	processClass( controllerClass, log )
-	    	println( "processed controller class: "+controllerClass.toString() )
 	    }    	
 	    
 	    application.domainClasses.each { domainClass ->
 	    	processClass( domainClass, log )
-	    	println( "processed domain class: "+domainClass.toString() )
 	    }    	
 	    
 	    application.serviceClasses.each { serviceClass ->
     		processClass( serviceClass, log )
-    		println( "processed service class: "+serviceClass.toString() )
 	    }    	
     
 	    application.tagLibClasses.each { tagLibClass ->
 	    	processClass( tagLibClass, log )
-	    	println( "processed tagLib class: "+tagLibClass.toString() )
 	    }    	
 	    
     }
@@ -90,30 +86,25 @@ b) Your original strings should be english, because Gnu gettext can't cope with 
         // Implement code that is executed when any artefact that this plugin is
         // watching is modified and reloaded. The event contains: event.source,
         // event.application, event.manager, event.ctx, and event.plugin.
-    	log.debug( "change event source: "+event.toString() )
 
         if ( application.isControllerClass(event.source) ) {
             def controllerClass = application.getControllerClass(event.source?.name)
             processClass( controllerClass, log )
-	    	println( "changed controller class: "+controllerClass.toString() )
         }
 
         if ( application.isDomainClass(event.source) ) {
             def domainClass = application.getDomainClass(event.source?.name)
             processClass( domainClass, log )
-	    	println( "changed domain class: "+domainClass.toString() )
         }
 
         if ( application.isServiceClass(event.source) ) {
             def serviceClass = application.getServiceClass(event.source?.name)
             processClass( serviceClass, log )
-    		println( "changed service class: "+serviceClass.toString() )
         }
 
         if ( application.isTagLibClass(event.source) ) {
             def tagLibClass = application.getTagLibClass(event.source?.name)
 	    	processClass( tagLibClass, log )
-	    	println( "changed tagLib class: "+tagLibClass.toString() )
         }
 
     }
@@ -122,8 +113,6 @@ b) Your original strings should be english, because Gnu gettext can't cope with 
      * Add dynamic methods to the given class
      */
     def processClass( theClass, log ){
-    	
-		println( "processing class: "+theClass.name ) 
     	
     	//  Returns the currently selected locale
        	theClass.metaClass.tr = {->
