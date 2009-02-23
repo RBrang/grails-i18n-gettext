@@ -1,4 +1,4 @@
-<plugin name='i18n-gettext' version='0.6' grailsVersion='1.1-RC1 &gt; *'>
+<plugin name='i18n-gettext' version='0.7' grailsVersion='1.1-RC1 &gt; *'>
   <author>Rainer Brang, Backend-Server GmbH &amp; Co. KG</author>
   <authorEmail>grails@backend-server.de</authorEmail>
   <title>I18n gettext plugin for grails</title>

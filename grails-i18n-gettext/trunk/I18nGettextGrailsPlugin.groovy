@@ -21,7 +21,7 @@ import org.codehaus.groovy.grails.commons.ApplicationHolder
 
 class I18nGettextGrailsPlugin {
     def observe = ['*']
-    def version = 0.6
+    def version = 0.7
     def loadAfter = ['taglibs']
 
     def author = "Rainer Brang, Backend-Server GmbH & Co. KG"
