@@ -19,4 +19,12 @@ import java.util.Locale;
 class I18nGettextTagLib {
 	// This serves as the namespace for the dynamically added methods (tr, trc, trn, ...)
 	static namespace = "t9n"
+	
+	// stubs of the methods that will later be added dynamically. This is a workaround introduced by some problem of Grails 1.1-x.
+	// When not defining these stubs here, this tagblib won't remember the dynamically added methods later on. Strange as it is.
+	def tr = {}
+	def trn = {}
+	def trc = {}
+	def marktr = {}
+	
 }

@@ -21,7 +21,7 @@ import org.codehaus.groovy.grails.commons.ApplicationHolder
 
 class I18nGettextGrailsPlugin {
     def observe = ['*']
-    def version = 0.7
+    def version = 0.71
     def loadAfter = ['taglibs']
 
     def author = "Rainer Brang, Backend-Server GmbH & Co. KG"
@@ -31,7 +31,7 @@ class I18nGettextGrailsPlugin {
 1 First, you need to wrap special method calls around all strings you want to translate.
 2 Then you call "grails i18ngettext" to extract all translatable strings from your sources.
 3 Now you translate all strings from step 2 which you will find in .po files in your i18n directory.
-4 Call "grails i18ngettext makemo" to compile your translated .po files into resource classes.
+4 Call "grails i18ngettext makemo" to compile your translated .po files into createLinkTo classes.
 5 repeat 1-4 each time you added some new strings to your application. Existing translations will be merged in. 
 
 During runtime: The methods, you wrapped around the strings, will pick the correct translation according to the
