@@ -21,9 +21,7 @@ import org.codehaus.groovy.grails.commons.ApplicationHolder
 
 class I18nGettextGrailsPlugin {
     def observe = ['*']
-	
-    def version = 0.5
-    def dependsOn = [:]
+    def version = 0.6
     def loadAfter = ['taglibs']
 
     def author = "Rainer Brang, Backend-Server GmbH & Co. KG"
@@ -61,21 +59,26 @@ b) Your original strings should be english, because Gnu gettext can't cope with 
      */
     def doWithDynamicMethods = { ctx ->
 
-	    application.controllerClasses.each { controllerClass ->
+    	println( "doWithDynamicMethods" )
+
+		application.controllerClasses.each { controllerClass ->
 	    	processClass( controllerClass, log )
+	    	println( "processed controller class: "+controllerClass.toString() )
 	    }    	
 	    
 	    application.domainClasses.each { domainClass ->
 	    	processClass( domainClass, log )
+	    	println( "processed domain class: "+domainClass.toString() )
 	    }    	
 	    
 	    application.serviceClasses.each { serviceClass ->
     		processClass( serviceClass, log )
+    		println( "processed service class: "+serviceClass.toString() )
 	    }    	
     
-
 	    application.tagLibClasses.each { tagLibClass ->
 	    	processClass( tagLibClass, log )
+	    	println( "processed tagLib class: "+tagLibClass.toString() )
 	    }    	
 	    
     }
@@ -87,25 +90,30 @@ b) Your original strings should be english, because Gnu gettext can't cope with 
         // Implement code that is executed when any artefact that this plugin is
         // watching is modified and reloaded. The event contains: event.source,
         // event.application, event.manager, event.ctx, and event.plugin.
+    	log.debug( "change event source: "+event.toString() )
 
         if ( application.isControllerClass(event.source) ) {
             def controllerClass = application.getControllerClass(event.source?.name)
             processClass( controllerClass, log )
+	    	println( "changed controller class: "+controllerClass.toString() )
         }
 
         if ( application.isDomainClass(event.source) ) {
             def domainClass = application.getDomainClass(event.source?.name)
             processClass( domainClass, log )
+	    	println( "changed domain class: "+domainClass.toString() )
         }
 
         if ( application.isServiceClass(event.source) ) {
             def serviceClass = application.getServiceClass(event.source?.name)
             processClass( serviceClass, log )
+    		println( "changed service class: "+serviceClass.toString() )
         }
 
         if ( application.isTagLibClass(event.source) ) {
             def tagLibClass = application.getTagLibClass(event.source?.name)
 	    	processClass( tagLibClass, log )
+	    	println( "changed tagLib class: "+tagLibClass.toString() )
         }
 
     }
@@ -115,7 +123,7 @@ b) Your original strings should be english, because Gnu gettext can't cope with 
      */
     def processClass( theClass, log ){
     	
-    	log.debug( "processing class: "+theClass.name ) 
+		println( "processing class: "+theClass.name ) 
     	
     	//  Returns the currently selected locale
        	theClass.metaClass.tr = {->
@@ -174,17 +182,17 @@ b) Your original strings should be english, because Gnu gettext can't cope with 
     	// Disambiguates translation keys
     	theClass.metaClass.trc = {String comment, String text, String locale, String sourceCodeLocale ->
 			def i18n = getI18nObject( session, request, log, locale, sourceCodeLocale )
-			i18n?i18n.trc(comment, text):text
+			i18n?i18n.trc(comment, text, false):text
     	}
 
     	theClass.metaClass.trc = {String comment, String text, String locale ->
 			def i18n = getI18nObject( session, request, log, locale )
-			i18n?i18n.trc(comment, text):text
+			i18n?i18n.trc(comment, text, false):text
     	}
 
     	theClass.metaClass.trc = {String comment, String text ->
     		def i18n = getI18nObject( session, request, log )
-			i18n?i18n.trc(comment, text):text
+			i18n?i18n.trc(comment, text, false):text
 		}    	
 
     	
@@ -218,7 +226,7 @@ b) Your original strings should be english, because Gnu gettext can't cope with 
 			def variant = ""
 
 			// use locale string forced by the method call or from the session.
-			if ( !wantLocale ){
+			if ( wantLocale==null ){
 				wantLocale = getCurrentLocale( session, request )
 			}
 			def wantedLocale = null
@@ -226,14 +234,14 @@ b) Your original strings should be english, because Gnu gettext can't cope with 
 				language = wantLocale?.split("_")[0].toLowerCase()
 				country = wantLocale?.split("_")[1].toUpperCase()
 				variant = wantLocale?.split("_")[2]
-			} catch( ArrayIndexOutOfBoundsException){
+			} catch( ArrayIndexOutOfBoundsException aioe0 ){
 				// ignore
 			}
 			wantedLocale = new Locale( language, country, variant )
 			
 			
 			// use source code locale string forced by the method call or from config or use the bailout "en"
-			if ( !forceSourceCodeLocale ){
+			if ( forceSourceCodeLocale==null ){
 				forceSourceCodeLocale = ApplicationHolder?.application?.config?.I18nGettext?.sourceCodeLocale ?:"en"
 			}
 			def wantedSourceCodeLocale = null
@@ -244,15 +252,14 @@ b) Your original strings should be english, because Gnu gettext can't cope with 
 				language = forceSourceCodeLocale?.split("_")[0].toLowerCase()
 				country = forceSourceCodeLocale?.split("_")[1].toUpperCase()
 				variant = forceSourceCodeLocale?.split("_")[2]
-			} catch( ArrayIndexOutOfBoundsException){
+			} catch( ArrayIndexOutOfBoundsException aioe1 ){
 				// ignore
 			}
 			wantedSourceCodeLocale = new Locale( language, country, variant )
 			
-
 			i18n = I18nFactory.getI18n( I18nGettextGrailsPlugin.class, "i18ngettext.Messages" )
-			i18n.setLocale( wantedLocale )
 			i18n.setSourceCodeLocale( wantedSourceCodeLocale )
+			i18n.setLocale( wantedLocale )
 			
 		} catch( MissingResourceException mre ){
 			log.error( mre.getMessage()+". Key: "+mre.getKey()+" Class: "+mre.getClassName() )
