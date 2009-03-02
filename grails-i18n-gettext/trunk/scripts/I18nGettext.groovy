@@ -23,7 +23,7 @@ includeTool << gant.tools.Execute
 
 includeTargets << gant.targets.Clean
 def configFile = "${i18nGettextPluginDir}/grails-app/conf/Config.groovy"
-def i18nDir = "${i18nGettextPluginDir}/grails-app/i18n"
+def i18nDir = "./grails-app/i18n"
 def i18nOutputDir = "${i18nGettextPluginDir}/lib"
 
 cleanPattern << [  i18nOutputDir+'/*$1.class', i18nDir+'/*.po~', i18nDir+'/*.pot' ]
@@ -157,6 +157,9 @@ target ( makemo: 'Update all .mo files from their updated .po files and write re
                         }
                 }
         }
+        
+        ant.jar(basedir:"${i18nOutputDir}/i18ngettext", destfile:"./lib/i18ngettext.jar")
+        
 }
 
 

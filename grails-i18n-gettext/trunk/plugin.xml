@@ -1,4 +1,4 @@
-<plugin name='i18n-gettext' version='0.8' grailsVersion='1.1-RC1 &gt; *'>
+<plugin name='i18n-gettext' version='0.82' grailsVersion='1.1-RC2 &gt; *'>
   <author>Rainer Brang, Backend-Server GmbH &amp; Co. KG</author>
   <authorEmail>grails@backend-server.de</authorEmail>
   <title>I18n gettext plugin for grails</title>
@@ -25,6 +25,7 @@ b) Your original strings should be english, because Gnu gettext can't cope with 
 </description>
   <documentation>http://www.grails.org/I18n-gettext+Plugin</documentation>
   <resources>
+    <resource>Config</resource>
     <resource>DataSource</resource>
     <resource>spring.resources</resource>
     <resource>UrlMappings</resource>

@@ -5,15 +5,18 @@ class T9nTagLibTests extends GrailsUnitTestCase {
 	// Mock "out" for taglib
 	StringWriter out
 	T9nTagLib t9n
+	def t9nService
 	
     protected void setUp() {
         super.setUp()
-        
+
 		out = new StringWriter()
         T9nTagLib.metaClass.out = out
+        T9nService.metaClass.log = log
         
         t9n = new T9nTagLib()
         t9n.t9nService = new T9nService()
+        
     }
 	
 

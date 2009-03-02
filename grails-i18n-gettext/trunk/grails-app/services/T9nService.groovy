@@ -35,16 +35,18 @@ class T9nService {
      */
 	def tr = { attrs ->
 	
-		if( !attrs || !attrs.s ){			throwError "Tag [tr] requires attribute [s]"
-		}		
+		if( !attrs || !attrs.s ){
+			throwError "method [tr] requires attribute [s] but got null"
+		}
+		
 		if( attrs?.c ){
-			log.info "Tag [tr] does not accept attribute [c]"
+			log?.info "method [tr] does not accept attribute [c]"
 		}
 		if( attrs?.p ){
-			log.info "Tag [tr] does not accept attribute [p]"
+			log?.info "method [tr] does not accept attribute [p]"
 		}
 		if( attrs?.n ){
-			log.info "Tag [tr] does not accept attribute [n]"
+			log?.info "method [tr] does not accept attribute [n]"
 		}
 		
 		// check attribute order
@@ -58,17 +60,134 @@ class T9nService {
 	}     
 
 
-	/**	 * trn - translation of plural strings.	 * @param s singular string to translate	 * @param p plural string to translate	 * @param n number which decides between singular and plural form	 * @param f optional arguments to messageFormat if you are using {0}, {1}... in your singular or plural string	 * @param locale optional argument to set the locale you want to translate to	 * @param sourceLocale optional argument to set the locale of the original string	 * @return translated string in singular or plural form, depending on what n is	 **/	def trn = { attrs ->	
-		if( !attrs || !attrs.s || !attrs.p || !attrs.n ){			throwError "Tag [trn] requires attribute [s] [p] and [n]"		}		if( attrs?.c ){			log.info("Tag [trn] does not accept attribute [c]")		}				// check attribute order		def theKeys = attrs.keySet().toArray();		if( !"s".equals( theKeys[0] ) ){			throwError "Tag [trn] requires attribute [s] to be the first attribute"		}		if( !"p".equals( theKeys[1] ) ){			throwError "Tag [trn] requires attribute [p] to be the second attribute"		}		if( !"n".equals( theKeys[2] ) ){			throwError "Tag [trn] requires attribute [n] to be the third attribute"		}				def i18n = getI18nObject( attrs.locale, attrs.sourceLocale )
+	/**
+	 * trn - translation of plural strings.
+	 * @param s singular string to translate
+	 * @param p plural string to translate
+	 * @param n number which decides between singular and plural form
+	 * @param f optional arguments to messageFormat if you are using {0}, {1}... in your singular or plural string
+	 * @param locale optional argument to set the locale you want to translate to
+	 * @param sourceLocale optional argument to set the locale of the original string
+	 * @return translated string in singular or plural form, depending on what n is
+	 **/
+	def trn = { attrs ->
+	
+		if( !attrs || !attrs.s || !attrs.p ){
+			throwError "method [trc] requires attribute [s] and [p] but got at least one of them as null"
+		}
+		
+		if( !attrs.n ){
+			throwError "method [trn] requires attribute [n]"
+		}
+		if( attrs?.c ){
+			log?.info("method [trn] does not accept attribute [c]")
+		}
+		
+		// check attribute order
+		def theKeys = attrs.keySet().toArray();
+		if( !"s".equals( theKeys[0] ) ){
+			throwError "method [trn] requires attribute [s] to be the first attribute"
+		}
+		if( !"p".equals( theKeys[1] ) ){
+			throwError "method [trn] requires attribute [p] to be the second attribute"
+		}
+		if( !"n".equals( theKeys[2] ) ){
+			throwError "method [trn] requires attribute [n] to be the third attribute"
+		}
+		
+		def i18n = getI18nObject( attrs.locale, attrs.sourceLocale )
 		return i18n ? (i18n.trn( attrs.s, attrs.p, attrs.n, (Object[])attrs.f )) : (attrs.n>1? (MessageFormat.format(attrs.p, (Object[])attrs.f)) : (MessageFormat.format(attrs.s, (Object[])attrs.f)) )
 	}
 
 	
-	/**	 * trc - translation with comment, disambiguates translation text.	 * @param c context of the singular string	 * @param s singular string to translate	 * @param locale optional argument to set the locale you want to translate to	 * @param sourceLocale optional argument to set the locale of the original string	 * @return translated string	 **/	def trc = { attrs ->		if( !attrs || !attrs.c || !attrs.s ){			throwError "Tag [trc] requires attribute [c] and [s]"		}		if( attrs?.p ){			log.info("Tag [trc] does not accept attribute [p]")		}		if( attrs?.n ){			log.info("Tag [trc] does not accept attribute [n]")		}		if( attrs?.f ){			log.info("Tag [trc] does not accept attribute [f]")		}						// check attribute order		def theKeys = attrs.keySet().toArray();		if( !"c".equals( theKeys[0] ) ){			throwError("Tag [trc] requires attribute [c] to be the first attribute")		}		if( !"s".equals( theKeys[1] ) ){			throwError("Tag [trc] requires attribute [s] to be the second attribute")		}				def i18n = getI18nObject( attrs.locale, attrs.sourceLocale )		return i18n ? (i18n.trc( attrs.c, attrs.s, false )) : (attrs.s)	}   		 	 	/**	 * marktr - mark for translation, but always return the original string.	 * @param s singular string to translate	 * @return original untranslated string	 **/	def marktr = { attrs ->		if( !attrs || !attrs.s ){			throwError "Tag [marktr] requires attribute [s]"		}		if( attrs?.c ){			log.info("Tag [marktr] does not accept attribute [c]")		}		if( attrs?.p ){			log.info("Tag [marktr] does not accept attribute [p]")		}		if( attrs?.n ){			log.info("Tag [marktr] does not accept attribute [n]")		}		if( attrs?.f ){			log.info("Tag [marktr] does not accept attribute [f]")		}		if( attrs?.locale ){			log.info("Tag [marktr] does not accept attribute [locale]")		}		if( attrs?.sourceLocale ){			log.info("Tag [marktr] does not accept attribute [sourceLocale]")		}				// check attribute order		def theKeys = attrs.keySet().toArray();		if( !"s".equals( theKeys[0] ) ){			throwError("Tag [tr] requires attribute [s] to be the first attribute")		}		// we are not interested in the current locale, we just force the source code locale. marktr does not return a translated string, anyway.		def i18n = getI18nObject( null, ApplicationHolder?.application?.config?.I18nGettext?.sourceCodeLocale ?:"en" )		return i18n ? (i18n.marktr(attrs.s)) : (attrs.s)	}	 
+	/**
+	 * trc - translation with comment, disambiguates translation text.
+	 * @param c context of the singular string
+	 * @param s singular string to translate
+	 * @param locale optional argument to set the locale you want to translate to
+	 * @param sourceLocale optional argument to set the locale of the original string
+	 * @return translated string
+	 **/
+	def trc = { attrs ->
+		if( !attrs || !attrs.s ){
+			throwError "method [trc] requires attribute [s] but got null"
+		}
+		if( !attrs.c ){
+			throwError "method [trc] requires attribute [c]"
+		}
+		if( attrs?.p ){
+			log?.info("method [trc] does not accept attribute [p]")
+		}
+		if( attrs?.n ){
+			log?.info("method [trc] does not accept attribute [n]")
+		}
+		if( attrs?.f ){
+			log?.info("method [trc] does not accept attribute [f]")
+		}
+		
+		
+		// check attribute order
+		def theKeys = attrs.keySet().toArray();
+		if( !"c".equals( theKeys[0] ) ){
+			throwError("method [trc] requires attribute [c] to be the first attribute")
+		}
+		if( !"s".equals( theKeys[1] ) ){
+			throwError("method [trc] requires attribute [s] to be the second attribute")
+		}
+		
+		def i18n = getI18nObject( attrs.locale, attrs.sourceLocale )
+		return i18n ? (i18n.trc( attrs.c, attrs.s, false )) : (attrs.s)
+	}   	
+	 
+	 
+	/**
+	 * marktr - mark for translation, but always return the original string.
+	 * @param s singular string to translate
+	 * @return original untranslated string
+	 **/
+	def marktr = { attrs ->
+		if( !attrs || !attrs.s ){
+			throwError "method [marktr] requires attribute [s] but got null"
+		}
+		if( attrs?.c ){
+			log?.info("method [marktr] does not accept attribute [c]")
+		}
+		if( attrs?.p ){
+			log?.info("method [marktr] does not accept attribute [p]")
+		}
+		if( attrs?.n ){
+			log?.info("method [marktr] does not accept attribute [n]")
+		}
+		if( attrs?.f ){
+			log?.info("method [marktr] does not accept attribute [f]")
+		}
+		if( attrs?.locale ){
+			log?.info("method [marktr] does not accept attribute [locale]")
+		}
+		if( attrs?.sourceLocale ){
+			log?.info("method [marktr] does not accept attribute [sourceLocale]")
+		}
+		
+		// check attribute order
+		def theKeys = attrs.keySet().toArray();
+		if( !"s".equals( theKeys[0] ) ){
+			throwError("Tag [tr] requires attribute [s] to be the first attribute")
+		}
+
+		// we are not interested in the current locale, we just force the source code locale. marktr does not return a translated string, anyway.
+		def i18n = getI18nObject( null, ApplicationHolder?.application?.config?.I18nGettext?.sourceCodeLocale ?:"en" )
+		return i18n ? (i18n.marktr(attrs.s)) : (attrs.s)
+	}	 
     
     
-	/**	 * getCurrentLocale - get the current locale	 * Get the current locale - either from the session, or from the browser's language	 * @return the current locale as a string	 **/	def getCurrentLocale = { ->
-				def currentLocale = null
+	/**
+	 * getCurrentLocale - get the current locale
+	 * Get the current locale - either from the session, or from the browser's language
+	 * @return the current locale as a string
+	 **/
+	def getCurrentLocale = { ->
+		
+		def currentLocale = null
 		
 		try{
 			def request = RCH.currentRequestAttributes().currentRequest
@@ -100,7 +219,8 @@ class T9nService {
 			def language = ""
 			def country = ""
 			def variant = ""
-						// use locale string forced by the method call or from the session.
+			
+			// use locale string forced by the method call or from the session.
 			if ( !wantLocale ){
 				wantLocale = getCurrentLocale()
 			}
@@ -115,7 +235,8 @@ class T9nService {
 			wantedLocale = new Locale( language, country, variant )
 			
 			// use source code locale string forced by the method call or from config or use the bailout "en"
-			if ( !forceSourceCodeLocale ){				forceSourceCodeLocale = ApplicationHolder?.application?.config?.I18nGettext?.sourceCodeLocale ?:"en"
+			if ( !forceSourceCodeLocale ){
+				forceSourceCodeLocale = ApplicationHolder?.application?.config?.I18nGettext?.sourceCodeLocale ?:"en"
 			}
 			def wantedSourceCodeLocale = null
 			language = ""
@@ -139,7 +260,11 @@ class T9nService {
 			return null
 		}
 		return i18n
-	}    
-    private throwError( String message ){    	throw new IllegalArgumentException( message );    	    }
+	}
+    
+
+    private throwError( String message ){
+    	throw new IllegalArgumentException( message );
+    }
 	
 }
