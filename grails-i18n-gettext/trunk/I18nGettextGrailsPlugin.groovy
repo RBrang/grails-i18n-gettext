@@ -21,7 +21,7 @@ import org.codehaus.groovy.grails.commons.ApplicationHolder
 
 class I18nGettextGrailsPlugin {
     def observe = ['*']
-    def version = 0.82
+    def version = 0.83
 
     def author = "Rainer Brang, Backend-Server GmbH & Co. KG"
     def authorEmail = "grails@backend-server.de"
