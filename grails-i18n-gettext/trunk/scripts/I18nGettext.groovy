@@ -158,7 +158,7 @@ target ( makemo: 'Update all .mo files from their updated .po files and write re
                 }
         }
         
-        ant.jar( dir:"i18ngettext", basedir:"${i18nOutputDir}/i18ngettext", destfile:"./lib/i18ngettext.jar")
+        ant.jar( basedir:"${i18nOutputDir}/i18ngettext", destfile:"./lib/i18ngettext.jar")
         
 }
 
