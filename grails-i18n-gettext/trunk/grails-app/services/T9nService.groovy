@@ -56,7 +56,13 @@ class T9nService {
 		}
 	
 		def i18n = getI18nObject( attrs.locale, attrs.sourceLocale )
-		return i18n ? (i18n.tr( attrs.s, (Object[])attrs.f)) : (MessageFormat.format(attrs.s, (Object[])attrs.f))
+		def theTrans = i18n ? (i18n.tr( attrs.s, (Object[])attrs.f)) : (MessageFormat.format(attrs.s, (Object[])attrs.f))
+				
+		if( attrs?.encoding=="none" ){
+			return theTrans
+		} else {
+			return theTrans.encodeAsHTML()
+		}
 	}     
 
 
@@ -96,7 +102,14 @@ class T9nService {
 		}
 		
 		def i18n = getI18nObject( attrs.locale, attrs.sourceLocale )
-		return i18n ? (i18n.trn( attrs.s, attrs.p, attrs.n, (Object[])attrs.f )) : (attrs.n>1? (MessageFormat.format(attrs.p, (Object[])attrs.f)) : (MessageFormat.format(attrs.s, (Object[])attrs.f)) )
+		def theTrans = i18n ? (i18n.trn( attrs.s, attrs.p, attrs.n, (Object[])attrs.f )) : (attrs.n>1? (MessageFormat.format(attrs.p, (Object[])attrs.f)) : (MessageFormat.format(attrs.s, (Object[])attrs.f)) )
+				
+		if( attrs?.encoding=="none" ){
+			return theTrans
+		} else {
+			return theTrans.encodeAsHTML()
+		}
+				
 	}
 
 	
@@ -136,7 +149,14 @@ class T9nService {
 		}
 		
 		def i18n = getI18nObject( attrs.locale, attrs.sourceLocale )
-		return i18n ? (i18n.trc( attrs.c, attrs.s, false )) : (attrs.s)
+		def theTrans = i18n ? (i18n.trc( attrs.c, attrs.s, false )) : (attrs.s)
+				
+		if( attrs?.encoding=="none" ){
+			return theTrans
+		} else {
+			return theTrans.encodeAsHTML()
+		}
+				
 	}   	
 	 
 	 
@@ -176,7 +196,14 @@ class T9nService {
 
 		// we are not interested in the current locale, we just force the source code locale. marktr does not return a translated string, anyway.
 		def i18n = getI18nObject( null, ApplicationHolder?.application?.config?.I18nGettext?.sourceCodeLocale ?:"en" )
-		return i18n ? (i18n.marktr(attrs.s)) : (attrs.s)
+		def theTrans = i18n ? (i18n.marktr(attrs.s)) : (attrs.s)
+				
+		if( attrs?.encoding=="none" ){
+			return theTrans
+		} else {
+			return theTrans.encodeAsHTML()
+		}
+				
 	}	 
     
     
