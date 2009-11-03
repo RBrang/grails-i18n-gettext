@@ -1,6 +1,6 @@
-<plugin name='i18n-gettext' version='0.85' grailsVersion='1.1 &gt; *'>
+<plugin name='i18n-gettext' version='0.90' grailsVersion='1.2-SNAPSHOT &gt; *'>
   <author>Rainer Brang, Backend-Server GmbH &amp; Co. KG</author>
-  <authorEmail>grails@backend-server.de</authorEmail>
+  <authorEmail>info@backend-server.de</authorEmail>
   <title>I18n gettext plugin for grails</title>
   <description>This plugin adds i18n support to your app, in 'gnu gettext'-style.
 1 First, you need to wrap special tags or service calls around all strings you want to translate.
@@ -27,10 +27,13 @@ b) Your original strings should be english, because Gnu gettext can't cope with 
   <resources>
     <resource>Config</resource>
     <resource>DataSource</resource>
-    <resource>spring.resources</resource>
     <resource>UrlMappings</resource>
+    <resource>spring.resources</resource>
     <resource>T9nService</resource>
     <resource>T9nTagLib</resource>
   </resources>
-  <dependencies />
+  <dependencies>
+    <resolvers />
+  </dependencies>
+  <behavior />
 </plugin>

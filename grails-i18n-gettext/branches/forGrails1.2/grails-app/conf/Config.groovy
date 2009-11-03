@@ -1,6 +1,7 @@
 t9n{
 	inputFileCharset = "UTF-8"
     sourceCodeLocale = "en"
+    excludedDirsArray = ["scripts"]
 }
 
 // The following properties have been added by the Upgrade process...

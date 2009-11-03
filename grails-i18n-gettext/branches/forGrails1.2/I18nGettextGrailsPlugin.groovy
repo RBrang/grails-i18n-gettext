@@ -21,10 +21,10 @@ import org.codehaus.groovy.grails.commons.ApplicationHolder
 
 class I18nGettextGrailsPlugin {
     def observe = ['*']
-    def version = 0.85
+    def version = 0.90
 
     def author = "Rainer Brang, Backend-Server GmbH & Co. KG"
-    def authorEmail = "grails@backend-server.de"
+    def authorEmail = "info@backend-server.de"
     def title = "I18n gettext plugin for grails"
     def description = """This plugin adds i18n support to your app, in 'gnu gettext'-style.
 1 First, you need to wrap special tags or service calls around all strings you want to translate.
