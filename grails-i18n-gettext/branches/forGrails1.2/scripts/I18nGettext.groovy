@@ -44,22 +44,32 @@ target( 'default': "Scan all .groovy and .gsp files for tr() trn() and merge wit
 
         switch( parameters[0] ){
         case 'init':
-          touchpo( parameters[1] )
+        	if( parameters.size()>1 ){
+                touchpo( parameters[1] )
+        	} else {
+                touchpo( "Messages" )
+        	}
+        
         break
         case 'clobber':
-         clobber()
+        	clobber()
         break
         case 'clean':
-         clean()
+        	clean()
         break
         case 'makemo':
-         makemo()
+        	makemo()
         break
         case 'merge':
         	mergepo()
         break
         case 'touchpo':
-        	touchpo( parameters[1] )
+        	if( parameters.size()>1 ){
+                touchpo( parameters[1] )
+        	} else {
+                touchpo( "Messages" )
+        	}
+        
         break
         case 'scan':
         default:
@@ -124,7 +134,7 @@ mergepo = {
         if( !it.contains('~') ){
             String lang = it.replace( ".po", "" )
 
-            command = 'msgmerge -U '+i18nDir+'/'+lang+'.po '+i18nDir+'/keys.pot'
+            command = 'msgmerge --backup=off -U '+i18nDir+'/'+lang+'.po '+i18nDir+'/keys.pot'
             println( command )
             def e = command.execute()
             e.waitFor()
@@ -152,7 +162,7 @@ makemo = {
             String lang = it.replace( ".po", "" )
 
             if( lang=="Messages" ){
-                command = 'msgfmt --java2 -d '+i18nOutputDirCanonical+' -r i18ngettext.Messages '+i18nDir+'/'+messageFileName  // the default Resource
+                command = 'msgfmt --java2 -d '+i18nOutputDirCanonical+' -r i18ngettext.Messages '+i18nDir+'/Messages.po' // the default Resource
             } else {
                 command = 'msgfmt --java2 -d '+i18nOutputDirCanonical+' -r i18ngettext.Messages -l '+lang+' '+i18nDir+'/'+lang+'.po'
             }
