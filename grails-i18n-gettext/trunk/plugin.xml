@@ -19,8 +19,11 @@ You will love the dead simple plural form handling and FormatMessage-like String
 forget about inventing lookup keys for your .properties files, because for gnu gettext, the original string is the key.
 Plus: No more problems with special chars like german umlauts. gettext can handle that.
 
+You can exclude directories from being scanned for translatable strings in your Config.groovy file.
+
 Beware: 
-a) Gnu gettext can not handle groovy's "here-doc" strings, so don't try to wrap tr() or alike around them.
+a) Gnu gettext can not handle groovy's "here-doc" strings, so don't try to wrap tr() or alike around them. Also some
+xgettext binaries seem to dislike here-doc strings so much, they don't parse files containing here-doc files correctly.
 b) Your original strings should be english, because Gnu gettext can't cope with non-ascii characters as original strings.
 
 Many thanks to:
