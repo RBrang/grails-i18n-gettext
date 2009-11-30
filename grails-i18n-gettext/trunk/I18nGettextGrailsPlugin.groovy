@@ -12,7 +12,7 @@
 //   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
-//
+// 
 
 import java.text.MessageFormat
 import java.util.Locale
@@ -21,10 +21,10 @@ import org.codehaus.groovy.grails.commons.ApplicationHolder
 
 class I18nGettextGrailsPlugin {
     def observe = ['*']
-    def version = 0.85
+    def version = 0.90
 
     def author = "Rainer Brang, Backend-Server GmbH & Co. KG"
-    def authorEmail = "grails@backend-server.de"
+    def authorEmail = "info@backend-server.de"
     def title = "I18n gettext plugin for grails"
     def description = """This plugin adds i18n support to your app, in 'gnu gettext'-style.
 1 First, you need to wrap special tags or service calls around all strings you want to translate.
@@ -43,9 +43,15 @@ You will love the dead simple plural form handling and FormatMessage-like String
 forget about inventing lookup keys for your .properties files, because for gnu gettext, the original string is the key.
 Plus: No more problems with special chars like german umlauts. gettext can handle that.
 
+You can exclude directories from being scanned for translatable strings in your Config.groovy file.
+
 Beware: 
-a) Gnu gettext can not handle groovy's "here-doc" strings.
+a) Gnu gettext can not handle groovy's "here-doc" strings, so don't try to wrap tr() or alike around them. Also some
+xgettext binaries seem to dislike here-doc strings so much, they don't parse files containing here-doc files correctly.
 b) Your original strings should be english, because Gnu gettext can't cope with non-ascii characters as original strings.
+
+Many thanks to:
+Donal Murtagh for testing and giving valuable feedback and ideas!
 """
 
     /**

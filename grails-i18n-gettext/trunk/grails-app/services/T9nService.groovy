@@ -23,7 +23,7 @@ import java.lang.IllegalArgumentException
 
 class T9nService {
 
-    boolean transactional = false
+    static transactional = false
     
     
     /**

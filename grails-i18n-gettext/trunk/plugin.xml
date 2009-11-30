@@ -1,6 +1,6 @@
-<plugin name='i18n-gettext' version='0.85' grailsVersion='1.1 &gt; *'>
+<plugin name='i18n-gettext' version='0.90' grailsVersion='1.1.1 &gt; *'>
   <author>Rainer Brang, Backend-Server GmbH &amp; Co. KG</author>
-  <authorEmail>grails@backend-server.de</authorEmail>
+  <authorEmail>info@backend-server.de</authorEmail>
   <title>I18n gettext plugin for grails</title>
   <description>This plugin adds i18n support to your app, in 'gnu gettext'-style.
 1 First, you need to wrap special tags or service calls around all strings you want to translate.
@@ -20,8 +20,11 @@ forget about inventing lookup keys for your .properties files, because for gnu g
 Plus: No more problems with special chars like german umlauts. gettext can handle that.
 
 Beware: 
-a) Gnu gettext can not handle groovy's "here-doc" strings.
+a) Gnu gettext can not handle groovy's "here-doc" strings, so don't try to wrap tr() or alike around them.
 b) Your original strings should be english, because Gnu gettext can't cope with non-ascii characters as original strings.
+
+Many thanks to:
+Donal Murtagh for testing and giving valuable feedback and ideas!
 </description>
   <documentation>http://www.grails.org/I18n-gettext+Plugin</documentation>
   <resources>

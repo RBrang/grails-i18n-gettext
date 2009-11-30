@@ -14,158 +14,210 @@
 //   limitations under the License.
 //
 
-import org.codehaus.groovy.grails.commons.GrailsClassUtils as GCU
-
-grailsHome = ant.project.properties."environment.GRAILS_HOME"
+//import org.codehaus.groovy.grails.commons.GrailsClassUtils as GCU
+//grailsHome = ant.project.properties."environment.GRAILS_HOME"
 
 includeTargets << grailsScript("Init")
+includeTargets << grailsScript("Package")
+includeTargets << gant.targets.Clean
 includeTool << gant.tools.Execute
 
-includeTargets << gant.targets.Clean
-def configFile = "${i18nGettextPluginDir}/grails-app/conf/Config.groovy"
 def i18nDir = "./grails-app/i18n"
 def i18nOutputDir = "${i18nGettextPluginDir}/lib"
 
-cleanPattern << [  i18nOutputDir+'/*$1.class', i18nDir+'/*.po~', i18nDir+'/*.pot' ]
-clobberPattern << [ i18nOutputDir+'/*.class' ]
+def getConfigValue = { what->
 
-def getConfigFile = {
-        File dsFile = new File( configFile )
-        def dsConfig = null
-        if( dsFile.exists() ) {
-        	dsConfig = new ConfigSlurper(grailsEnv).parse(dsFile.text)
-        }
-        return dsConfig
+	def result = null
+
+	try {
+	   switch( what ){
+			case"inputFileCharset":
+				result = config?.t9n?.inputFileCharset?config?.t9n?.inputFileCharset:"en"
+				return result 
+			break
+	
+			case"excludedDirsArray":
+				result = config?.t9n?.excludedDirsArray?config?.t9n.excludedDirsArray:[]
+				return result 
+			break
+	
+			case"noWrapPoLines":
+				result = config?.t9n?.noWrapPoLines?true:false
+				return result 
+			break
+			
+			default:
+				return null
+		}
+			
+	} catch (Exception e) { 
+		// ignore 
+	}
+	
+	return null;
 }
 
-target('default': "Scan all .groovy and .gsp files for tr() trn() and merge with all .po files in "+i18nDir ) {
-        parameters = []
+
+
+target( 'default': "Scan all .groovy and .gsp files for tr() trn() and merge with all .po files in "+i18nDir ) {
+		depends(packageApp)
+	
+		parameters = []
 
         if( args ){
-                parameters = args.split("\n")
+        	parameters = args.split("\n")
         }
 
         switch( parameters[0] ){
-                case 'init':
-                 touchpo( fileNameToCreate:parameters[1] )
-                break
-                case 'clobber':
-                 clobber()
-                break
-                case 'clean':
-                 clean()
-                break
-                case 'makemo':
-                 makemo()
-                break
-                case 'merge':
-                 merge()
-                break
-                case 'scan':
-                default:
-                 scan()
-        }
+        case 'init':
+        	if( parameters.size()>1 ){
+                touchpo( parameters[1] )
+        	} else {
+                touchpo( "Messages" )
+        	}
+        
+        break
+        case 'clobber':
+        	clobber()
+        break
+        case 'clean':
+        	clean()
+        break
+        case 'makemo':
+        	makemo()
+        break
+        case 'merge':
+        	mergepo()
+        break
+        case 'touchpo':
+        	if( parameters.size()>1 ){
+                touchpo( parameters[1] )
+        	} else {
+                touchpo( "Messages" )
+        	}
+        
+        break
+        case 'scan':
+        default:
+        	scan()
+    }
 }
 
 
 
-target ( scan: 'Search all .groovy or .gsp files for tr() trn() and generate a .pot file in grails-app/i18n.' ) {
+scan = {
+		
     println("\nGenerating .pot file from sources.")
 
-    def charset = getConfigFile()?.I18nGettext?.inputFileCharset ?:"UTF-8"
+    def charset = getConfigValue( "inputFileCharset" )
+    def excludedDirsArray = getConfigValue( "excludedDirsArray" )
+    def noWrap = getConfigValue( "noWrapPoLines" )?"--no-wrap":""
 
     // trash the last .pot file
     def keysFileName = i18nDir+"/keys.pot"
     new File( keysFileName ).write("")
-
+    
     new File(".").eachFileRecurse{ file ->
+    	def currentFileCanonicalPath = file.getCanonicalPath()
+    	
+    	def skipThis = false
+    	excludedDirsArray.any { 
+    		if( currentFileCanonicalPath.startsWith( new File(it).getCanonicalPath() ) ){
+    			skipThis = true
+    		}
+    	} 
+    	
+    	if( !skipThis ){
             if( file.isFile() ){
-
-                    // switch programming language identifier for best recognition rates
-                    def programmingLanguageIdentifier = ""
-                    if( file.name.endsWith(".groovy") || file.name.endsWith(".java") ){
-                            programmingLanguageIdentifier = "java"
-                    } else if( file.name.endsWith(".gsp") || file.name.endsWith(".jsp") ) {
-                            // pretend to scan a .php file, which results in a much higher recognition rate.
-                            programmingLanguageIdentifier = "php"
-                    } 
+                // switch programming language identifier for best recognition rates
+                def programmingLanguageIdentifier = ""
+                if( file.name.endsWith(".groovy") || file.name.endsWith(".java") ){
+                    programmingLanguageIdentifier = "java"
+                } else if( file.name.endsWith(".gsp") || file.name.endsWith(".jsp") ) {
+                    // pretend to scan a .php file, which results in a much higher recognition rate.
+                    programmingLanguageIdentifier = "php"
+                } 
                     	
-                    if( programmingLanguageIdentifier.length()>0 ){
-                            def command = 'xgettext -j --force-po -ktrc -ktr -kmarktr -ktrn:1,2 --from-code '+charset+' -o'+i18nDir+'/keys.pot -L'+programmingLanguageIdentifier+' '+file.absolutePath
-                            println( command )
-                            def e = command.execute()
-                            e.waitFor()
-                            if( e.exitValue() ){
-                                println( "Error: "+e.err.text )
-                            }
+                if( programmingLanguageIdentifier.length()>0 ){
+                    def command = 'xgettext -j --force-po '+noWrap+' -ktrc -ktr -kmarktr -ktrn:1,2 --from-code  '+charset+' -o '+i18nDir+'/keys.pot -L'+programmingLanguageIdentifier+' '+file.getCanonicalPath()
+                    
+                    println( command )
+                    def e = command.execute()
+                    e.waitFor()
+                    if( e.exitValue() ){
+                        println( "Error: "+e.err.text )
                     }
+                }
             }
+    	}
     }
 
-    merge()
+    mergepo()
 }
 
 
 
-target ( merge: 'Merge the .pot file with all available .po files in grails-app/i18n.' ) {
-        println("\nMerging .po files with .pot file.")
+mergepo = {
 
-        touchpo( [fileNameToCreate:"Messages"] )        // the default Resource
+	println("\nMerging .po files with .pot file.")
+    touchpo( "Messages" )        // the default Resource
 
-        List fl = new File(i18nDir).listFiles([accept:{file->file ==~ /.*?\.po/ }] as FileFilter).toList().name
+    List fl = new File(i18nDir).listFiles([accept:{file->file ==~ /.*?\.po/ }] as FileFilter).toList().name
+    def noWrap = getConfigValue( "noWrapPoLines" )?"--no-wrap":""
 
-        fl.each(){
-                if( !it.contains('~') ){
-                        String lang = it.replace( ".po", "" )
+    fl.each(){
+        if( !it.contains('~') ){
+            String lang = it.replace( ".po", "" )
 
-                        command = 'msgmerge -U '+i18nDir+'/'+lang+'.po '+i18nDir+'/keys.pot'
-                        println( command )
-                        def e = command.execute()
-                        e.waitFor()
-                        if( e.exitValue() ){
-                                println( "Error: "+e.err.text )
-                        }
-                }
+            command = 'msgmerge '+noWrap+' --backup=off -U '+i18nDir+'/'+lang+'.po '+i18nDir+'/keys.pot'
+            println( command )
+            def e = command.execute()
+            e.waitFor()
+            if( e.exitValue() ){
+                println( "Error: "+e.err.text )
+            }
         }
+    }
 }
 
 
-target ( makemo: 'Update all .mo files from their updated .po files and write results to '+i18nOutputDir+'.' ) {
-        println("\nCompiling .mo files.")
+makemo = {
+    println("\nCompiling .mo files.")
 
-        def destination = new File( i18nOutputDir );
-        if( !destination.exists() ){
-            destination.mkdir()
+    def destination = new File( i18nOutputDir );
+    if( !destination.exists() ){
+        destination.mkdir()
+    }
+    
+    def i18nOutputDirCanonical = destination.getCanonicalPath()
+
+    List fl = new File(i18nDir).listFiles([accept:{file->file ==~ /.*?\.po/ }] as FileFilter).toList().name
+    fl.each(){
+        if( !it.contains('~') ){
+            String lang = it.replace( ".po", "" )
+
+            if( lang=="Messages" ){
+                command = 'msgfmt --java2 -d '+i18nOutputDirCanonical+' -r i18ngettext.Messages '+i18nDir+'/Messages.po' // the default Resource
+            } else {
+                command = 'msgfmt --java2 -d '+i18nOutputDirCanonical+' -r i18ngettext.Messages -l '+lang+' '+i18nDir+'/'+lang+'.po'
+            }
+
+            println( command )
+            def e = command.execute()
+            e.waitFor()
+            if( e.exitValue() ){
+                println( "Error: "+e.err.text )
+            }
         }
-
-        List fl = new File(i18nDir).listFiles([accept:{file->file ==~ /.*?\.po/ }] as FileFilter).toList().name
-        fl.each(){
-                if( !it.contains('~') ){
-                        String lang = it.replace( ".po", "" )
-
-                        if( lang=="Messages" ){
-                                command = 'msgfmt --java2 -d '+i18nOutputDir+' -r i18ngettext.Messages '+i18nDir+'/Messages.po'  // the default Resource
-                        } else {
-                                command = 'msgfmt --java2 -d '+i18nOutputDir+' -r i18ngettext.Messages -l '+lang+' '+i18nDir+'/'+lang+'.po'
-                        }
-
-                        println( command )
-                        def e = command.execute()
-                        e.waitFor()
-                        if( e.exitValue() ){
-                                println( "Error: "+e.err.text )
-                        }
-                }
-        }
-        
-        ant.jar( basedir:"${i18nOutputDir}", includes:"i18ngettext/*", destfile:"./lib/i18ngettext.jar")
+    }
+    
+    ant.jar( basedir:"${i18nOutputDirCanonical}", includes:"i18ngettext/*", destfile:"./lib/i18ngettext.jar")
 }
 
 
-target ( touchpo: 'Create a .po file copy from Messages.po (Create Messages.po if it does not exist).') {
+touchpo = { fileNameToCreate->
 
-    def charset = getConfigFile()?.I18nGettext?.inputFileCharset ?:"UTF-8"
-
+	def charset = getConfigValue( "inputFileCharset" )
     def header = """
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR AUTHOR
@@ -185,40 +237,35 @@ msgstr ""
 "Content-Type: text/plain; charset=${charset}\\n"
 "Content-Transfer-Encoding: 8bit\\n"
 """
-    def fileNameToCreate = ""
-    if( it instanceof List ){
-        fileNameToCreate = it.fileNameToCreate
-    }
 
-    if( fileNameToCreate.length()>0 ){
-            println( "FileName: "+fileNameToCreate )
-            fileNameToCreate = fileNameToCreate.replace( ".po", "" )
+	if( fileNameToCreate.length()>0 ){
+		
+        fileNameToCreate = fileNameToCreate.replace( ".po", "" )
 
-            def destination = new File( ""+i18nDir+'/'+fileNameToCreate+'.po' );
+        def destination = new File( ""+i18nDir+'/'+fileNameToCreate+'.po' );
 
-            if( !destination.exists() ){
+        if( destination.exists() ){
+        	if( fileNameToCreate != "Messages" ){
+            	println( "File: "+destination.getCanonicalPath()+" already exists. Will not recreate it.")
+        	}
+        } else {
+            if( fileNameToCreate=="Messages" ){
+            	// write our default header to the file
+            	destination.write( header, 'UTF-8' )
+            } else {
+                // make sure the "Messages.po" file exists
+                touchpo( "Messages" )
 
-                    if( fileNameToCreate=="Messages" ){
-
-                            // write our default header to the file
-                            destination.write( header, 'UTF-8' )
-
-                    } else {
-                            // make sure the "Messages.po" file exists
-                            touchpo( [fileNameToCreate:"Messages"] )
-
-                            def source = new File( ""+i18nDir+'/Messages.po' );
-                            if( source ){
-                                    // copy the "Messages.po" file to the new name.
-                                    destination.withOutputStream{ out->out.write source.readBytes() }
-                            } else {
-                                    // write our default header to the file
-                                    destination.write( header, 'UTF-8' )
-                            }
-
-                    }
+                def source = new File( ""+i18nDir+'/Messages.po' );
+                if( source ){
+                    // copy the "Messages.po" file to the new name.
+                    destination.withOutputStream{ out->out.write source.readBytes() }
+                } else {
+                    // write our default header to the file
+                    destination.write( header, 'UTF-8' )
+                }
+            	println( "File: "+destination.getCanonicalPath()+" has been created.")
             }
-
+        }
     }
-
 }
