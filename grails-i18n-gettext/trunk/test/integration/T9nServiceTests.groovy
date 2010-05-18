@@ -1,3 +1,5 @@
+import grails.plugins.i18n_gettext.*
+
 class T9nServiceTests extends GroovyTestCase{
 	
 	def t9nService
