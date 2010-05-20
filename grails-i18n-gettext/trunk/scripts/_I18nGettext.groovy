@@ -4,7 +4,7 @@ includeTool << gant.tools.Execute
 
 def i18nDir = "./grails-app/i18n"
 def i18nOutputDir = "${i18nGettextPluginDir}/lib"
-def fileNameToCreate = null
+fileNameToCreate = null
 
 def getConfigValue = { what->
 

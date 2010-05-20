@@ -34,9 +34,11 @@ target( main: "Scan all .groovy and .gsp files for tr() trn() and merge with all
         switch( parameters[0] ){
         case 'init':
         	if( parameters.size()>1 ){
-                touchpo( parameters[1] )
+        		fileNameToCreate = parameters[1]
+                touchpo()
         	} else {
-                touchpo( "Messages" )
+        		fileNameToCreate = "Messages"
+                touchpo()
         	}
         
         break
@@ -54,9 +56,11 @@ target( main: "Scan all .groovy and .gsp files for tr() trn() and merge with all
         break
         case 'touchpo':
         	if( parameters.size()>1 ){
-                touchpo( parameters[1] )
+        		fileNameToCreate = parameters[1]
+                touchpo()
         	} else {
-                touchpo( "Messages" )
+        		fileNameToCreate = "Messages"
+                touchpo()
         	}
         
         break
