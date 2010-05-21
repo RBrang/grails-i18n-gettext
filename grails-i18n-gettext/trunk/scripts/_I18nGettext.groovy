@@ -73,7 +73,7 @@ target( scan:"Generate .pot file from sources" ){
                 } 
                     	
                 if( programmingLanguageIdentifier.length()>0 ){
-                    def command = 'xgettext -j --force-po '+noWrap+' -ktrc -ktr -kmarktr -ktrn:1,2 --from-code  '+charset+' -o '+i18nDir+'/keys.pot -L'+programmingLanguageIdentifier+' '+file.getCanonicalPath()
+                    def command = 'xgettext -j --force-po '+noWrap+' -ktrc -ktr -kmarktr -ktrn:1,2 --from-code='+charset+' -o '+i18nDir+'/keys.pot -L'+programmingLanguageIdentifier+' '+file.getCanonicalPath()
                     
                     println( command )
                     def e = command.execute()
