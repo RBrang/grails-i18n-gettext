@@ -13,7 +13,7 @@ def getConfigValue = { what->
 	try {
 	   switch( what ){
 			case"inputFileCharset":
-				result = config?.t9n?.inputFileCharset?config?.t9n?.inputFileCharset:"en"
+				result = config?.t9n?.inputFileCharset?config?.t9n?.inputFileCharset:"UTF-8"
 				return result 
 			break
 	
