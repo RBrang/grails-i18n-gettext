@@ -14,7 +14,9 @@
 //   limitations under the License.
 //
 
-def i18nDir = "./grails-app/i18n"
+i18nDir = "./grails-app/i18n"
+i18nOutputDir = "${i18nGettextPluginDir}/lib"
+fileNameToCreate = null
 
 includeTargets << grailsScript("_GrailsInit")
 includeTargets << grailsScript("_GrailsPackage")

@@ -2,10 +2,6 @@ includeTargets << grailsScript("_GrailsInit")
 includeTargets << gant.targets.Clean
 includeTool << gant.tools.Execute
 
-def i18nDir = "./grails-app/i18n"
-def i18nOutputDir = "${i18nGettextPluginDir}/lib"
-fileNameToCreate = null
-
 def getConfigValue = { what->
 
 	def result = null
