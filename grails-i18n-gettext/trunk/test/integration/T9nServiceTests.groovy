@@ -16,7 +16,7 @@ class T9nServiceTests extends GroovyTestCase{
         
         t9n = new T9nTagLib()
         t9n.t9nService = new T9nService()
-            }
+    }
 
 	
     protected void tearDown() {
@@ -57,6 +57,15 @@ class T9nServiceTests extends GroovyTestCase{
     		t9n.tr( locale:"de", s:"anything" ) 
     	}
     }
+
+    
+    void testTrBundle() {
+    	out.getBuffer().setLength(0)
+    	assertToString t9n.tr(s:"foo", locale:"en", bundle:"bar"), "fooo"
+
+    	out.getBuffer().setLength(0)
+    	assertToString t9n.tr(s:"foo"), "foo"
+	}
     
     
     void testTrFunctionality() {

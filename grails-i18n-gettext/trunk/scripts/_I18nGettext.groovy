@@ -114,6 +114,18 @@ target( mergepo:"Merging .po files with .pot file" ){
 
 target( makemo:"Compile .mo files" ){
     println("\nCompiling .mo files.")
+    
+    parameters = []
+                       
+    if( args ){
+    	parameters = args.split("\n")
+    }
+
+    bundle = null
+    if(parameters.size()>1) {
+	    bundle = parameters[1]
+	    i18nOutputDir +=  "/" + bundle
+    }
 
     def destination = new File( i18nOutputDir );
     if( !destination.exists() ){
@@ -121,6 +133,8 @@ target( makemo:"Compile .mo files" ){
     }
     
     def i18nOutputDirCanonical = destination.getCanonicalPath()
+    
+    def bundleName = bundle ? "i18ngettext.${bundle}.Messages" : "i18ngettext.Messages"    
 
     List fl = new File(i18nDir).listFiles([accept:{file->file ==~ /.*?\.po/ }] as FileFilter).toList().name
     fl.each(){
@@ -128,9 +142,9 @@ target( makemo:"Compile .mo files" ){
             String lang = it.replace( ".po", "" )
 
             if( lang=="Messages" ){
-                command = 'msgfmt --java2 -d '+i18nOutputDirCanonical+' -r i18ngettext.Messages '+i18nDir+'/Messages.po' // the default Resource
+                command = 'msgfmt --java2 -d '+i18nOutputDirCanonical+' -r '+bundleName+' '+i18nDir+'/Messages.po' // the default Resource
             } else {
-                command = 'msgfmt --java2 -d '+i18nOutputDirCanonical+' -r i18ngettext.Messages -l '+lang+' '+i18nDir+'/'+lang+'.po'
+                command = 'msgfmt --java2 -d '+i18nOutputDirCanonical+' -r '+bundleName+' -l '+lang+' '+i18nDir+'/'+lang+'.po'
             }
 
             println( command )
@@ -142,7 +156,8 @@ target( makemo:"Compile .mo files" ){
         }
     }
     
-    ant.jar( basedir:"${i18nOutputDirCanonical}", includes:"i18ngettext/*", destfile:"./lib/i18ngettext.jar")
+    def jarName = bundle ? "i18ngettext-${bundle}.jar" : "i18ngettext.jar"
+    ant.jar( basedir:"${i18nOutputDirCanonical}", includes:"i18ngettext/**/*", destfile:"./lib/${jarName}")    
 }
 
 

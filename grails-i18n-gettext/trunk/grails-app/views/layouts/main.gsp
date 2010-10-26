@@ -8,7 +8,7 @@
     </head>
     <body>
         <div id="spinner" class="spinner" style="display:none;">
-            <img src="${createLinkTo(dir:'images',file:'spinner.gif')}" alt="Spinner" />
+            <img src="${createLinkTo(dir:'images',file:'spinner.gif')}" alt="Spinner" style="width:16px;height:11px;" />
         </div>	
         <div class="logo"><img src="${createLinkTo(dir:'images',file:'grails_logo.jpg')}" alt="Grails" /></div>	
         <g:layoutBody />		

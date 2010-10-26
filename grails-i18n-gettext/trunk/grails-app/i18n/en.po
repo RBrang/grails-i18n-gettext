@@ -18,7 +18,7 @@ msgstr ""
 
 msgid "foo"
 msgid_plural "foos"
-msgstr[0] ""
+msgstr[0] "fooo"
 msgstr[1] ""
 
 msgid "foo{0}"

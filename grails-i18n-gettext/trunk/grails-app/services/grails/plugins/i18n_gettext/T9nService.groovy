@@ -57,7 +57,7 @@ class T9nService {
 			throwError "Tag [tr] requires attribute [s] to be the first attribute"
 		}
 	
-		def i18n = getI18nObject( attrs.locale, attrs.sourceLocale )
+		def i18n = getI18nObject( attrs.locale, attrs.sourceLocale, attrs.bundle )
 		def theTrans = i18n ? (i18n.tr( attrs.s, (Object[])attrs.f)) : (MessageFormat.format(attrs.s, (Object[])attrs.f))
 				
 		if( attrs?.encoding=="none" ){
@@ -103,7 +103,7 @@ class T9nService {
 			throwError "method [trn] requires attribute [n] to be the third attribute"
 		}
 		
-		def i18n = getI18nObject( attrs.locale, attrs.sourceLocale )
+		def i18n = getI18nObject( attrs.locale, attrs.sourceLocale, attrs.bundle )
 		def theTrans = i18n ? (i18n.trn( attrs.s, attrs.p, attrs.n, (Object[])attrs.f )) : (attrs.n>1? (MessageFormat.format(attrs.p, (Object[])attrs.f)) : (MessageFormat.format(attrs.s, (Object[])attrs.f)) )
 				
 		if( attrs?.encoding=="none" ){
@@ -150,7 +150,7 @@ class T9nService {
 			throwError("method [trc] requires attribute [s] to be the second attribute")
 		}
 		
-		def i18n = getI18nObject( attrs.locale, attrs.sourceLocale )
+		def i18n = getI18nObject( attrs.locale, attrs.sourceLocale, attrs.bundle )
 		def theTrans = i18n ? (i18n.trc( attrs.c, attrs.s, false )) : (attrs.s)
 				
 		if( attrs?.encoding=="none" ){
@@ -197,7 +197,7 @@ class T9nService {
 		}
 
 		// we are not interested in the current locale, we just force the source code locale. marktr does not return a translated string, anyway.
-		def i18n = getI18nObject( null, ApplicationHolder?.application?.config?.I18nGettext?.sourceCodeLocale ?:"en" )
+		def i18n = getI18nObject( null, ApplicationHolder?.application?.config?.I18nGettext?.sourceCodeLocale ?:"en", attrs.bundle )
 		def theTrans = i18n ? (i18n.marktr(attrs.s)) : (attrs.s)
 				
 		if( attrs?.encoding=="none" ){
@@ -240,7 +240,7 @@ class T9nService {
     /**
      * Get an I18n from the I81nFactoy and set the current locale and source code locale.
      */
-	private getI18nObject( wantLocale=null, forceSourceCodeLocale=null ) {
+	private getI18nObject( wantLocale=null, forceSourceCodeLocale=null, bundle=null ) {
     	
 		def i18n = null
 		try{
@@ -280,7 +280,8 @@ class T9nService {
 			}
 			wantedSourceCodeLocale = new Locale( language, country, variant )
 			
-			i18n = I18nFactory.getI18n( T9nService.class, "i18ngettext.Messages" )
+			def resourceBundle = bundle? "i18ngettext.${bundle}.Messages" : "i18ngettext.Messages"
+			i18n = I18nFactory.getI18n( T9nService.class, resourceBundle )			
 			i18n.setSourceCodeLocale( wantedSourceCodeLocale )
 			i18n.setLocale( wantedLocale )
 			

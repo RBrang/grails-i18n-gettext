@@ -21,7 +21,7 @@ import org.codehaus.groovy.grails.commons.ApplicationHolder
 
 class I18nGettextGrailsPlugin {
     def observe = ['*']
-    def version = 0.94
+    def version = 0.97
 
     def author = "Rainer Brang, Backend-Server GmbH & Co. KG"
     def authorEmail = "info@backend-server.de"
@@ -52,6 +52,7 @@ b) Your original strings should be english, because Gnu gettext can't cope with 
 
 Many thanks to:
 Donal Murtagh for testing and giving valuable feedback and ideas!
+Jonathan Leibiusky for adding bundles    	
 """
 
     /**
