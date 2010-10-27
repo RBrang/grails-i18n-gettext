@@ -1,25 +1,25 @@
 includeTargets << grailsScript("_GrailsInit")
+includeTargets << grailsScript("_GrailsPackage")
 includeTargets << gant.targets.Clean
 includeTool << gant.tools.Execute
 
 def getConfigValue = { what->
-
 	def result = null
-
+	
 	try {
 	   switch( what ){
 			case"inputFileCharset":
-				result = config?.t9n?.inputFileCharset?config?.t9n?.inputFileCharset:"UTF-8"
+				result = config.t9n?.inputFileCharset?config.t9n.inputFileCharset.toString():"UTF-8"
 				return result 
 			break
 	
 			case"excludedDirsArray":
-				result = config?.t9n?.excludedDirsArray?config?.t9n.excludedDirsArray:[]
+				result = config.t9n?.excludedDirsArray?config.t9n.excludedDirsArray:[]
 				return result 
 			break
 	
 			case"noWrapPoLines":
-				result = config?.t9n?.noWrapPoLines?true:false
+				result = config.t9n?.noWrapPoLines?true:false
 				return result 
 			break
 			
@@ -33,6 +33,7 @@ def getConfigValue = { what->
 	
 	return null;
 }
+
 
 
 target( scan:"Generate .pot file from sources" ){
@@ -52,7 +53,8 @@ target( scan:"Generate .pot file from sources" ){
     	
     	def skipThis = false
     	excludedDirsArray.any { 
-    		if( currentFileCanonicalPath.startsWith( new File(it).getCanonicalPath() ) ){
+        	def excludePath = new File(it).getCanonicalPath()
+        	if( currentFileCanonicalPath.startsWith( excludePath ) ){
     			skipThis = true
     		}
     	} 
@@ -61,8 +63,10 @@ target( scan:"Generate .pot file from sources" ){
             if( file.isFile() ){
                 // switch programming language identifier for best recognition rates
                 def programmingLanguageIdentifier = ""
-                if( file.name.endsWith(".groovy") || file.name.endsWith(".java") ){
+                if( file.name.endsWith(".java") ){
                     programmingLanguageIdentifier = "java"
+                } else if( file.name.endsWith(".groovy") ) {
+                    programmingLanguageIdentifier = "python"		// may give better results, e.g. also include strings in single quotes.
                 } else if( file.name.endsWith(".gsp") || file.name.endsWith(".jsp") ) {
                     // pretend to scan a .php file, which results in a much higher recognition rate.
                     programmingLanguageIdentifier = "php"
@@ -112,29 +116,24 @@ target( mergepo:"Merging .po files with .pot file" ){
 }
 
 
-target( makemo:"Compile .mo files" ){
-    println("\nCompiling .mo files.")
+target( makemo:"Compile .mo files" ){ params->
+
+	bundleName = "i18ngettext.Messages"
+		
+	if( bundle ){
+	    println("\nCompiling .mo files for bundle: ${bundle}")
+	    i18nOutputDir +=  "/${bundle}"
+	    bundleName = "i18ngettext.${bundle}.Messages"     
+	} else {
+	    println("\nCompiling .mo files")
+	}
     
-    parameters = []
-                       
-    if( args ){
-    	parameters = args.split("\n")
-    }
-
-    bundle = null
-    if(parameters.size()>1) {
-	    bundle = parameters[1]
-	    i18nOutputDir +=  "/" + bundle
-    }
-
     def destination = new File( i18nOutputDir );
     if( !destination.exists() ){
         destination.mkdir()
     }
     
     def i18nOutputDirCanonical = destination.getCanonicalPath()
-    
-    def bundleName = bundle ? "i18ngettext.${bundle}.Messages" : "i18ngettext.Messages"    
 
     List fl = new File(i18nDir).listFiles([accept:{file->file ==~ /.*?\.po/ }] as FileFilter).toList().name
     fl.each(){
@@ -157,7 +156,8 @@ target( makemo:"Compile .mo files" ){
     }
     
     def jarName = bundle ? "i18ngettext-${bundle}.jar" : "i18ngettext.jar"
-    ant.jar( basedir:"${i18nOutputDirCanonical}", includes:"i18ngettext/**/*", destfile:"./lib/${jarName}")    
+//    ant.jar( basedir:"${i18nOutputDirCanonical}", includes:"i18ngettext/**/*", destfile:"./lib/${jarName}")    
+      ant.jar( basedir:"${i18nOutputDirCanonical}", includes:"i18ngettext/*", destfile:"./lib/${jarName}")    
 }
 
 

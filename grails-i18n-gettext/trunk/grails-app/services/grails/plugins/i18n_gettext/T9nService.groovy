@@ -23,10 +23,11 @@ import org.codehaus.groovy.grails.commons.ApplicationHolder
 import org.springframework.web.context.request.RequestContextHolder as RCH
 import java.lang.IllegalArgumentException
 
+import org.springframework.web.servlet.support.RequestContextUtils as RCU
+
 class T9nService {
 
     static transactional = false
-    def localeResolver    
     
     /**
      * @param s - the text to translate
@@ -215,24 +216,32 @@ class T9nService {
 	 * @return the current locale as a string
 	 **/
 	def getCurrentLocale = { ->
+		return getRequestLocale().toString()		
+	}
+    
+	/**
+	 * getCurrentLocale - get the current locale
+	 * Get the current locale - either from the session, or from the browser's language
+	 * @return the current locale as a string
+	 **/
+	private Locale getRequestLocale() {
 		
 		def currentLocale = null
 		
 		try{
 			def request = RCH.currentRequestAttributes().currentRequest
-			currentLocale = request.getAttribute(localeResolver.LOCALE_REQUEST_ATTRIBUTE_NAME)
-			currentLocale = currentLocale?currentLocale:request?.getLocale()
+			currentLocale = RCU.getLocale( request )					// Retrieves the current locale from the given request, using the LocaleResolver bound to the request by the DispatcherServlet (if available), falling back to the request's accept-header Locale.
 		} catch( Exception e ){
 			// no implementation. This could be an IllegalStateException because we try to access the session during bootstrap when there is no session available... 
 		}
 				
 		// Fallbacks		
 		if( !currentLocale ){
-			currentLocale = ApplicationHolder?.application?.config?.I18nGettext?.sourceCodeLocale ?:"en"			
+			currentLocale = new Locale( ApplicationHolder?.application?.config?.I18nGettext?.sourceCodeLocale ?:"en" )			
 		}
 		
-		return currentLocale.toString()		
-	}
+		return currentLocale		
+	}    
     
     
     /**
@@ -243,29 +252,32 @@ class T9nService {
 		def i18n = null
 		try{
 			
-			def language = ""
+			def language = ApplicationHolder?.application?.config?.I18nGettext?.sourceCodeLocale ?:"en"
 			def country = ""
 			def variant = ""
 			
-			// use locale string forced by the method call or from the session.
-			if ( !wantLocale ){
-				wantLocale = getCurrentLocale()
-			}
 			def wantedLocale = null
-			try{
-				language = wantLocale?.split("_")[0].toLowerCase()
-				country = wantLocale?.split("_")[1].toUpperCase()
-				variant = wantLocale?.split("_")[2]
-			} catch( ArrayIndexOutOfBoundsException aioe0 ){
-				// ignore
+			
+			// use locale string forced by the method call or from the session.
+			if ( wantLocale ){
+				try{
+					language = wantLocale?.split("_")[0].toLowerCase()
+					country = wantLocale?.split("_")[1].toUpperCase()
+					variant = wantLocale?.split("_")[2]
+				} catch( ArrayIndexOutOfBoundsException aioe0 ){
+					// ignore
+				}
+				wantedLocale = new Locale( language, country, variant )
+			} else {
+				wantedLocale = getRequestLocale()
 			}
-			wantedLocale = new Locale( language, country, variant )
 			
 			// use source code locale string forced by the method call or from config or use the bailout "en"
 			if ( !forceSourceCodeLocale ){
 				forceSourceCodeLocale = ApplicationHolder?.application?.config?.I18nGettext?.sourceCodeLocale ?:"en"
 			}
 			def wantedSourceCodeLocale = null
+
 			language = ""
 			country = ""
 			variant = ""
@@ -279,9 +291,8 @@ class T9nService {
 			wantedSourceCodeLocale = new Locale( language, country, variant )
 			
 			def resourceBundle = bundle? "i18ngettext.${bundle}.Messages" : "i18ngettext.Messages"
-			i18n = I18nFactory.getI18n( T9nService.class, resourceBundle )			
+			i18n = I18nFactory.getI18n( T9nService.class, resourceBundle, wantedLocale )			
 			i18n.setSourceCodeLocale( wantedSourceCodeLocale )
-			i18n.setLocale( wantedLocale )
 			
 		} catch( MissingResourceException mre ){
 			log.error( mre.getMessage()+". Key: "+mre.getKey()+" Class: "+mre.getClassName() )

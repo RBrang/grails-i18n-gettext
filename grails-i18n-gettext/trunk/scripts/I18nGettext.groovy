@@ -13,11 +13,16 @@
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
 //
+import grails.util.GrailsUtil 
+
 
 i18nDir = "./grails-app/i18n"
 i18nOutputDir = "${i18nGettextPluginDir}/lib"
 fileNameToCreate = null
+bundle = null
+config = null
 
+includeTargets << grailsScript("_GrailsCompile")
 includeTargets << grailsScript("_GrailsInit")
 includeTargets << grailsScript("_GrailsPackage")
 includeTargets << gant.targets.Clean
@@ -27,6 +32,11 @@ includeTargets << new File("${i18nGettextPluginDir}/scripts/_I18nGettext.groovy"
 
 target( main: "Scan all .groovy and .gsp files for tr() trn() and merge with all .po files in "+i18nDir ) {
 	
+		compile() 
+		def classLoader = Thread.currentThread().contextClassLoader
+		classLoader.addURL(new File(classesDirPath).toURL()) 
+		config = new ConfigSlurper(GrailsUtil.environment).parse(classLoader.loadClass('Config')) 
+		
 		parameters = []
 
         if( args ){
@@ -37,11 +47,10 @@ target( main: "Scan all .groovy and .gsp files for tr() trn() and merge with all
         case 'init':
         	if( parameters.size()>1 ){
         		fileNameToCreate = parameters[1]
-                touchpo()
         	} else {
         		fileNameToCreate = "Messages"
-                touchpo()
         	}
+            touchpo()
         
         break
         case 'clobber':
@@ -51,6 +60,11 @@ target( main: "Scan all .groovy and .gsp files for tr() trn() and merge with all
         	clean()
         break
         case 'makemo':
+        	if( parameters.size()>1 ){
+            	bundle = parameters[1]
+        	} else {
+        		bundle = null
+        	}
         	makemo()
         break
         case 'merge':
@@ -59,11 +73,10 @@ target( main: "Scan all .groovy and .gsp files for tr() trn() and merge with all
         case 'touchpo':
         	if( parameters.size()>1 ){
         		fileNameToCreate = parameters[1]
-                touchpo()
         	} else {
         		fileNameToCreate = "Messages"
-                touchpo()
         	}
+            touchpo()
         
         break
         case 'scan':
