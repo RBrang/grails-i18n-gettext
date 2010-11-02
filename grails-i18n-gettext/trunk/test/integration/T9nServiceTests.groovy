@@ -64,8 +64,8 @@ class T9nServiceTests extends GroovyTestCase{
     	assertToString t9n.tr(s:"foo", locale:"en", bundle:"bar"), "fooo"
 
     	out.getBuffer().setLength(0)
-    	assertToString t9n.tr(s:"foo"), "foo"
-	}
+    	assertToString t9n.trn( s:"foo", p:"foos", n:2, bundle:"bar" ), "fooos" 
+    }
     
     
     void testTrFunctionality() {

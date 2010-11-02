@@ -156,8 +156,7 @@ target( makemo:"Compile .mo files" ){ params->
     }
     
     def jarName = bundle ? "i18ngettext-${bundle}.jar" : "i18ngettext.jar"
-//    ant.jar( basedir:"${i18nOutputDirCanonical}", includes:"i18ngettext/**/*", destfile:"./lib/${jarName}")    
-      ant.jar( basedir:"${i18nOutputDirCanonical}", includes:"i18ngettext/*", destfile:"./lib/${jarName}")    
+    ant.jar( basedir:"${i18nOutputDirCanonical}", includes:"i18ngettext/**/*", destfile:"./lib/${jarName}")    
 }
 
 
