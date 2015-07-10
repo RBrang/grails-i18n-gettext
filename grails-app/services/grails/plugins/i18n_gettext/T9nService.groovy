@@ -19,15 +19,17 @@ package grails.plugins.i18n_gettext
 import java.text.MessageFormat
 import java.util.Locale
 import org.xnap.commons.i18n.*
-import org.codehaus.groovy.grails.commons.ApplicationHolder
 import org.springframework.web.context.request.RequestContextHolder as RCH
 import java.lang.IllegalArgumentException
+import grails.util.Holders
 
 import org.springframework.web.servlet.support.RequestContextUtils as RCU
 
 class T9nService {
 
     static transactional = false
+//	static scope = "session"
+//	static proxy = true
     
     /**
      * @param s - the text to translate
@@ -198,7 +200,7 @@ class T9nService {
 		}
 
 		// we are not interested in the current locale, we just force the source code locale. marktr does not return a translated string, anyway.
-		def i18n = getI18nObject( null, ApplicationHolder?.application?.config?.I18nGettext?.sourceCodeLocale ?:"en", attrs.bundle )
+		def i18n = getI18nObject( null, Holders.grailsApplication?.config?.I18nGettext?.sourceCodeLocale ?:"en", attrs.bundle )
 		def theTrans = i18n ? (i18n.marktr(attrs.s)) : (attrs.s)
 				
 		if( attrs?.encoding=="none" ){
@@ -237,7 +239,7 @@ class T9nService {
 				
 		// Fallbacks		
 		if( !currentLocale ){
-			currentLocale = new Locale( ApplicationHolder?.application?.config?.I18nGettext?.sourceCodeLocale ?:"en" )			
+			currentLocale = new Locale( Holders.grailsApplication?.config?.I18nGettext?.sourceCodeLocale ?:"en" )			
 		}
 		
 		return currentLocale		
@@ -252,7 +254,7 @@ class T9nService {
 		def i18n = null
 		try{
 			
-			def language = ApplicationHolder?.application?.config?.I18nGettext?.sourceCodeLocale ?:"en"
+			def language = Holders.grailsApplication?.config?.I18nGettext?.sourceCodeLocale ?:"en"
 			def country = ""
 			def variant = ""
 			
@@ -274,7 +276,7 @@ class T9nService {
 			
 			// use source code locale string forced by the method call or from config or use the bailout "en"
 			if ( !forceSourceCodeLocale ){
-				forceSourceCodeLocale = ApplicationHolder?.application?.config?.I18nGettext?.sourceCodeLocale ?:"en"
+				forceSourceCodeLocale = Holders.grailsApplication?.config?.I18nGettext?.sourceCodeLocale ?:"en"
 			}
 			def wantedSourceCodeLocale = null
 

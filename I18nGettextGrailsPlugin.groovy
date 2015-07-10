@@ -17,11 +17,11 @@
 import java.text.MessageFormat
 import java.util.Locale
 import org.xnap.commons.i18n.*
-import org.codehaus.groovy.grails.commons.ApplicationHolder
 
 class I18nGettextGrailsPlugin {
     def observe = ['*']
-    def version = 0.98
+    def version = "1.1"
+	def grailsVersion = "2.4.5 > *"
 
     def author = "Rainer Brang, Backend-Server GmbH & Co. KG"
     def authorEmail = "info@backend-server.de"
