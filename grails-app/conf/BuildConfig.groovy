@@ -32,15 +32,20 @@ grails.project.dependency.resolution = {
 		//mavenRepo "http://download.java.net/maven/2/"
 		//mavenRepo "http://repository.jboss.com/maven2/"
 	}
+	
 	dependencies {
 		// specify dependencies here under either 'build', 'compile', 'runtime', 'test' or 'provided' scopes eg.
 	}
 
 	plugins {
         // plugins for the build system only
-        compile ":tomcat:7.0.54"
-        compile ":hibernate:3.6.10.17" //        compile ":hibernate4:4.3.5.5"
+        build (":tomcat:7.0.54") {
+			export=false
+		}
+		build (":release:3.1.1") {
+			export=false
+		}
+        runtime ":hibernate:3.6.10.17" //        compile ":hibernate4:4.3.5.5"
 		compile ":scoped-proxy:0.3"
-		build ":release:3.1.1"		
 	}
 }
