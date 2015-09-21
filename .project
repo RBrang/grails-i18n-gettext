@@ -26,7 +26,7 @@
 		<link>
 			<name>.link_to_grails_plugins</name>
 			<type>2</type>
-			<locationURI>GRAILS_ROOT/2.4.5/projects/I18nGettext/plugins</locationURI>
+			<locationURI>GRAILS_ROOT/2.5.1/projects/I18nGettext/plugins</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>
